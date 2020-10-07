@@ -3,6 +3,7 @@ package application;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -10,9 +11,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-    	 
-        primaryStage.setTitle("File selector");
-        primaryStage.setScene(new Scene(new VBox(), 300, 400));
+    	Pane root = new Pane();
+    	App app = new App();
+    	root.getChildren().add(app);
+    	
+        primaryStage.setTitle("A-maze-ing");
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
         
         //  
