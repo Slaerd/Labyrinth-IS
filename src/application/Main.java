@@ -12,11 +12,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
     	Pane root = new Pane();
-    	App app = new App();
-    	root.getChildren().add(app);
+    	App app = new App(primaryStage);
+    	root.getChildren().add(app.labSelect);
     	
         primaryStage.setTitle("A-maze-ing");
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(new Scene(root, 1000, 600));
         primaryStage.show();
         
         //  
