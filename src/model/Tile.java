@@ -9,12 +9,13 @@ public class Tile {
 	public static final int BONUSACTION = 1;
 	public static final int BONUSMOVEMENT = 2;
 	
-	private String playerName = "";
+	private int playerNumber;
 	private int tileType;
 	private int specialEvent = 0;
 	
 	public Tile(int type){
 		tileType = type;
+		playerNumber = -1;
 	}
 	
 	public Tile(int type, int special) {
@@ -22,11 +23,15 @@ public class Tile {
 		specialEvent = special;
 	}
 	
-	public void putPlayer(String name) {
-		playerName = name;
+	public int getType() {
+		return tileType;
 	}
-	public void removePlayer(String name) {
-		playerName = "";
+	
+	public void putPlayer(int n) {
+		playerNumber = n;
+	}
+	public void removePlayer() {
+		playerNumber = -1;
 	}
 	public void removeSpecial() {
 		specialEvent = 0;
