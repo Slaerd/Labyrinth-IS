@@ -11,11 +11,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-    	Pane root = new Pane();
     	App app = new App(primaryStage);
     	
         primaryStage.setTitle("A-maze-ing");
-        primaryStage.setScene(app.gameScene);
+        primaryStage.setScene(app.mainMenuScene);
         primaryStage.show();
         
         //  
