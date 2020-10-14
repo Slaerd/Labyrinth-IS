@@ -84,9 +84,9 @@ public class TileButton extends Button implements Listener{
 	
 	public void update() {
 		this.setTextFill(Color.GREEN);
-		if(controller.getPlayer(x, y) != -1)
+		if(controller.getPlayer(x, y) != -1) {
 			this.setText(Integer.toString(controller.getPlayer(x, y))); 
-		else
+		}else
 			this.setText("");
 		
 		if(controller.isAccessible(x,y))
