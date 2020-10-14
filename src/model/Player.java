@@ -37,5 +37,9 @@ public class Player {
 	public int getMovement() {
 		return MOVEMENT + bonusMovement;
 	}
+
+	public int getActions() {
+		return action;
+	}
 }
 

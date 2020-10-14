@@ -7,15 +7,16 @@ import event.Listener;
 public class GameModel {
 	private ArrayList<Player> playerList;
 	private ArrayList<ArrayList<Tile>> laby;
-	private int turnPlayer;
+	private ArrayList<Tile> accessible;
+	private int turnPlayer = 0;
 	
 	private ArrayList<Listener> listenerList;
 	public GameModel() {
 		laby = Laby.getSquare();
-		turnPlayer = 0;
 		playerList = new ArrayList<Player>();
 		templatePlayers();
 		listenerList = new ArrayList<Listener>();
+		generateAccessibles(playerList.get(turnPlayer));
 		
 	}
 	
@@ -30,20 +31,40 @@ public class GameModel {
 		//distance check outside of recursive function
 		
 		if(laby.get(x).get(y).getPlayerNumber() == -1) {
-			if(isLegalMove(currentPlayer, x , y)) {
+			//if(isLegalMove(currentPlayer, x , y)) {
+			if(accessible.contains(laby.get(x).get(y))) {
 				laby.get(currentPlayer.x).get(currentPlayer.y).removePlayer();
 				currentPlayer.moveTo(x, y);
 				laby.get(x).get(y).putPlayer(n);
-				for(Listener l : listenerList)
-					l.update();
+				//currentPlayer.spendAction();
+			}
+		}
+		
+		if(currentPlayer.getActions() > 0) {
+			generateAccessibles(currentPlayer);
+		}
+		for(Listener l : listenerList)
+			l.update();
+	}
+	
+	public void moveWall() {
+		
+	}
+	
+	private void generateAccessibles(Player p) {
+		accessible = new ArrayList<Tile>();
+		for(int x = 0; x < Laby.SIZE; x++) {
+			for(int y = 0; y < Laby.SIZE; y++) {
+				//if(Math.abs(x - p.x) + Math.abs(y - p.y) <= p.getMovement())
+					if(isLegalMove(p,x,y))
+						accessible.add(laby.get(x).get(y));
 			}
 		}
 	}
 	
-	/*private void generateAccessibles() {
-		for(int i = 0; i <)
-	}*/
-	
+	public ArrayList<Tile> getAccessible(){
+		return accessible;
+	}
 	/**
 	 * DOES NOT CHECK DISTANCE PLEASE DO IT IN THE MOVE FUNCTION
 	 * @param p
@@ -84,6 +105,11 @@ public class GameModel {
 
 	public int getPlayer(int x, int y) {
 		return laby.get(x).get(y).getPlayerNumber();
+	}
+
+	public boolean isAccessible(int x, int y) {
+		
+		return accessible.contains(laby.get(x).get(y));
 	}
 	
 }

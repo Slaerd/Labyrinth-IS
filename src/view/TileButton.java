@@ -55,7 +55,7 @@ public class TileButton extends Button implements Listener{
 		controller.addListener(this);
 		update();
 	}
-	
+
 	/**
 	 * Custom style of buttons
 	 */
@@ -89,8 +89,10 @@ public class TileButton extends Button implements Listener{
 		else
 			this.setText("");
 		
-		/*if(controller.isAccessible(x,y))
-			this.setStyle("-fx-background-color: Blue; -fx-border-color: Black");*/
+		if(controller.isAccessible(x,y))
+			this.setStyle("-fx-background-color: #31BFFF; -fx-border-color: Black");
+		else
+			this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
 			
 		
 	}

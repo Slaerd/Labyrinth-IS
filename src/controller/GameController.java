@@ -32,4 +32,9 @@ public class GameController {
 	public void addModel(GameModel model) {
 		this.model = model;
 	}
+
+	public boolean isAccessible(int x, int y) {
+		
+		return model.isAccessible(x,y);
+	}
 }
