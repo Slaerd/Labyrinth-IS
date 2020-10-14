@@ -2,27 +2,47 @@ package model;
 
 import java.util.ArrayList;
 
+import event.Listener;
+
 public class GameModel {
 	private ArrayList<Player> playerList;
 	private ArrayList<ArrayList<Tile>> laby;
+	private int turnPlayer;
+	
+	private ArrayList<Listener> listenerList;
 	public GameModel() {
+		laby = Laby.getSquare();
+		turnPlayer = 0;
+		playerList = new ArrayList<Player>();
+		templatePlayers();
+		listenerList = new ArrayList<Listener>();
 		
 	}
 	
+	private void templatePlayers() {
+		for(int i = 0; i < 4; i++) {
+			playerList.add(new Player("bruh",i,0));
+		}
+	};
 	public void movePlayer(int n, int x, int y) {
 		Player currentPlayer = playerList.get(n);
 		
 		//distance check outside of recursive function
-		int distance = Math.abs(x - currentPlayer.x) + Math.abs(y - currentPlayer.y);
-		boolean minDistance = distance > 0;
-		boolean maxDistance = distance <= currentPlayer.getMovement();
 		
-		
-		if(isLegalMove(currentPlayer, x , y) && minDistance && maxDistance)
-			laby.get(currentPlayer.x).get(currentPlayer.y).removePlayer();
-			currentPlayer.moveTo(x, y);
-			laby.get(x).get(y).putPlayer(n);
+		if(laby.get(x).get(y).getPlayerNumber() == -1) {
+			if(isLegalMove(currentPlayer, x , y)) {
+				laby.get(currentPlayer.x).get(currentPlayer.y).removePlayer();
+				currentPlayer.moveTo(x, y);
+				laby.get(x).get(y).putPlayer(n);
+				for(Listener l : listenerList)
+					l.update();
+			}
+		}
 	}
+	
+	/*private void generateAccessibles() {
+		for(int i = 0; i <)
+	}*/
 	
 	/**
 	 * DOES NOT CHECK DISTANCE PLEASE DO IT IN THE MOVE FUNCTION
@@ -32,27 +52,38 @@ public class GameModel {
 	 * @return
 	 */
 	private boolean isLegalMove(Player p, int fX, int fY) {
-		int travelX = fX - p.x;
-		int travelY = fY - p.y;
-		int travelXSign = travelX/Math.abs(travelX);
-		int travelYSign = travelY/Math.abs(travelY);
-		int total = Math.abs(travelX) + Math.abs(travelY);
+		
+		int distance = Math.abs(fX - p.x) + Math.abs(fY - p.y);
 		
 		boolean type = laby.get(fX).get(fY).getType() == Tile.FLOOR;
 		
-		if (type) {
-			if(total == 1)		//Tile is next to player and clear
+		if (type && distance > 0 
+				&& distance <= p.getMovement()) {
+			if(distance == 1)		//Tile is next to player and clear
 				return true;
 			else {
-				if(travelX == 0)	//only vertical movement
-					return isLegalMove(p, fX, fY - travelYSign);
-				if(travelY == 0)	//only horizontal movement
-					return isLegalMove(p, fX - travelXSign, fY);
+				if(fY != p.y)	//only vertical movement
+					return isLegalMove(p, fX, fY - (fY - p.y) / Math.abs(fY - p.y)); //sign of fY - p.y
+				if(fX != p.x)	//only horizontal movement
+					return isLegalMove(p, fX - (fX - p.x) / Math.abs(fX - p.x), fY);
 									//else visit all the tiles
-				return isLegalMove(p, fX - travelXSign, fY) || isLegalMove(p, fX, fY - travelYSign);
+				return isLegalMove(p, fX - (fX - p.x) / Math.abs(fX - p.x), fY) || isLegalMove(p, fX, fY - fY - (fY - p.y) / Math.abs(fY - p.y));
 			}
 		}
 		return false;
-	}	
+	}
+
+	public int getTurnPlayer() {
+		return turnPlayer;
+	}
+
+	public void addListener(Listener listener) {
+		listenerList.add(listener);
+		
+	}
+
+	public int getPlayer(int x, int y) {
+		return laby.get(x).get(y).getPlayerNumber();
+	}
 	
 }

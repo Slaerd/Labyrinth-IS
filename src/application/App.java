@@ -3,23 +3,29 @@ package application;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.*;
+import controller.*;
+import view.TileButton;
 
 public class App{
 	
 	private Stage stage;
 	
 	//Scene List
-	protected VBox labSelect = new VBox();
-	protected FlowPane game; 
+	protected Scene labSelectScene; 
+	protected Scene gameScene; 
 	//MainMenu widgets
 	public Button charGenButton = new Button("Character Generation");
 	public Button playButton = new Button("Play");
@@ -28,6 +34,9 @@ public class App{
 	
 	//labSelect widgets
 	private Button labBackButton = new Button("Back");
+	
+	//Game stuff
+	private GameController gameController;
 	
 	private Button labSquare = new Button();
 	private Button labRectangle = new Button();
@@ -39,8 +48,14 @@ public class App{
 	
 	public App(Stage stage) {
 		this.stage = stage;
+		gameController = new GameController();
+		gameController.addModel(new GameModel());
+		
 		//initUI();
-		initLabSelect();
+		//initLabSelect();
+		initGameUI();
+		
+		
 	}
 	
 	public void initUI() {
@@ -49,12 +64,13 @@ public class App{
 		//this.getChildren().add(vpane);
 	}
 	
-	public void initLabSelect() {
+	private void initLabSelect() {
 		labBackButton.setOnMouseClicked(e->{
 			/*TODO 1 : Nathan | Met le nom du Pane du menu*/
 			//stage.setScene();
 		});
 		
+		VBox root = new VBox();
 		HBox sceneSwitchBox = new HBox();
 		HBox lineOne = new HBox();
 		VBox blockOne = new VBox();
@@ -94,9 +110,26 @@ public class App{
 		
 		lineTwo.setAlignment(Pos.CENTER);
 		
-		labSelect.setSpacing(25);
-		labSelect.setPadding(new Insets(50,50,50,50));
-		labSelect.setAlignment(Pos.CENTER);
-		labSelect.getChildren().addAll(sceneSwitchBox,lineOne,lineTwo);
+		root.setSpacing(25);
+		root.setPadding(new Insets(50,50,50,50));
+		root.setAlignment(Pos.CENTER);
+		root.getChildren().addAll(sceneSwitchBox,lineOne,lineTwo);
+		labSelectScene = new Scene(root,1000,600);
+	}
+	
+	private void initGameUI() {
+		BorderPane root = new BorderPane();
+		GridPane laby = new GridPane();
+		
+		TileButton buffer;
+		for(int i = 0; i < Laby.SIZE; i++) {
+			for(int j = 0; j < Laby.SIZE; j++) {
+				buffer = new TileButton(i, j, gameController);
+				laby.add(buffer, i, j);
+			}
+		}
+		
+		root.setCenter(laby);
+		gameScene = new Scene(root, 1000,600);
 	}
 }

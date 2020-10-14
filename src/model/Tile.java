@@ -9,13 +9,12 @@ public class Tile {
 	public static final int BONUSACTION = 1;
 	public static final int BONUSMOVEMENT = 2;
 	
-	private int playerNumber;
+	private int playerNumber = -1;
 	private int tileType;
 	private int specialEvent = 0;
 	
 	public Tile(int type){
 		tileType = type;
-		playerNumber = -1;
 	}
 	
 	public Tile(int type, int special) {
@@ -25,6 +24,10 @@ public class Tile {
 	
 	public int getType() {
 		return tileType;
+	}
+	
+	public int getPlayerNumber() {
+		return playerNumber;
 	}
 	
 	public void putPlayer(int n) {

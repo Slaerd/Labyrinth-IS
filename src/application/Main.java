@@ -13,10 +13,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
     	Pane root = new Pane();
     	App app = new App(primaryStage);
-    	root.getChildren().add(app.labSelect);
     	
         primaryStage.setTitle("A-maze-ing");
-        primaryStage.setScene(new Scene(root, 1000, 600));
+        primaryStage.setScene(app.gameScene);
         primaryStage.show();
         
         //  

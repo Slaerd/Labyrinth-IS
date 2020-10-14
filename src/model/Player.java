@@ -1,7 +1,7 @@
 package model;
 
 public class Player {
-	public static final int MOVEMENT = 2;
+	public static final int MOVEMENT = 3;
 	public static final int ACTION = 2;
 	
 	private String name;
