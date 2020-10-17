@@ -14,13 +14,14 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import model.Tile;
 
-public class TileButton extends Button implements Listener{
+public class TileButton extends ListenerButton{
 	
 	private int x; //Coordinates of the corresponding tiles
 	private int y;
 	private GameController controller;
-	
 	/**
 	 * Buttons that make up the grid on the play view
 	 * 
@@ -29,15 +30,14 @@ public class TileButton extends Button implements Listener{
 	 * @param j column of the matching column
 	 * @param controller
 	 */
-	public TileButton(int i, int j,GameController controller) {
-		super();
+	public TileButton(int i, int j, GameController superController) {
+		super(superController);
+		this.controller = superController;
 		
 		this.setPadding(new Insets(0,0,0,0)); //Makes the flag fit in the button
-		this.setPrefSize(25, 25);
+		this.setPrefSize(50, 50);
 		x = i;
 		y = j;
-		
-		this.controller = controller;
 		
 		initStyle();
 		
@@ -83,8 +83,22 @@ public class TileButton extends Button implements Listener{
 
 	
 	public void update() {
-		this.setTextFill(Color.GREEN);
+		this.setTextFill(Color.BLACK);
+		
+		String style = new String();
+		int tileType = controller.getTileType(x, y);
+		
+		if(tileType == Tile.FLOOR)
+			style = "-fx-background-color: #dddddd; -fx-border-color: Black";
+		if(tileType == Tile.WALL) {
+			style = "-fx-background-color: #3f3f3f; -fx-border-color: Black";
+		}
+		if(tileType == Tile.VOID) {
+			style = "-fx-background-color: #111111; -fx-border-color: Black";
+		}
+				
 		if(controller.getPlayer(x, y) != -1) {
+			//this.setTextFill();
 			this.setText(Integer.toString(controller.getPlayer(x, y))); 
 		}else
 			this.setText("");
@@ -92,7 +106,7 @@ public class TileButton extends Button implements Listener{
 		if(controller.isAccessible(x,y))
 			this.setStyle("-fx-background-color: #31BFFF; -fx-border-color: Black");
 		else
-			this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
+			this.setStyle(style);
 			
 		
 	}

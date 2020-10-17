@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.*;
 import controller.*;
+import view.ListenerButton;
 import view.TileButton;
 
 public class App{
@@ -31,16 +32,17 @@ public class App{
 	
 	//labSelect widgets
 	private Button labBackButton = new Button("Back");
-	
-	//Game stuff
-	private GameController gameController;
-	
 	private Button labSquare = new Button();
 	private Button labRectangle = new Button();
 	private Button labCross = new Button();
 	private Label labelSquare = new Label("The Square");
 	private Label labelRectangle = new Label("The Rectangle");
 	private Label labelCross = new Label("The Cross");
+	
+	//Game stuff
+	private GameController gameController;
+	
+
 	
 	
 	public App(Stage stage) {
@@ -118,6 +120,23 @@ public class App{
 		BorderPane root = new BorderPane();
 		GridPane laby = new GridPane();
 		
+		ListenerButton nextTurn = new ListenerButton("Pass",gameController) {
+			public void update() {
+				if(gameController.getActionsLeft() == 0)
+					this.setStyle("-fx-background-color: #9CFF31; -fx-border-color: Black");
+				
+					this.setStyle("");
+					
+			}
+		};
+		
+		nextTurn.setPrefSize(100, 100);
+		nextTurn.setOnMouseClicked(e -> {
+			if(e.getButton().equals(MouseButton.PRIMARY))
+				gameController.nextTurn();
+		});
+		gameController.addListener(nextTurn);
+		
 		TileButton buffer;
 		for(int i = 0; i < Laby.SIZE; i++) {
 			for(int j = 0; j < Laby.SIZE; j++) {
@@ -127,6 +146,7 @@ public class App{
 		}
 		
 		root.setCenter(laby);
+		root.setBottom(nextTurn);
 		gameScene = new Scene(root, 1000,600);
 	}
 }

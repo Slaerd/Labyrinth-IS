@@ -13,8 +13,13 @@ public class Tile {
 	private int tileType;
 	private int specialEvent = 0;
 	
-	public Tile(int type){
+	public int x;
+	public int y;
+	
+	public Tile(int type, int x, int y){
 		tileType = type;
+		this.x = x;
+		this.y = y;
 	}
 	
 	public Tile(int type, int special) {
@@ -39,4 +44,10 @@ public class Tile {
 	public void removeSpecial() {
 		specialEvent = 0;
 	}
+	
+	//////////////////////
+	//// WALL METHODS ////
+	//////////////////////
+	
+	
 }
