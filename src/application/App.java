@@ -82,7 +82,6 @@ public class App{
 		labSquare.setOnMouseClicked(e->{
 			//TODO 1 : Kevin | Ajouter le setScene game
 			if(e.getButton().equals(MouseButton.PRIMARY))
-				
 				System.out.println("Square");
 			
 		});
@@ -124,7 +123,7 @@ public class App{
 			public void update() {
 				if(gameController.getActionsLeft() == 0)
 					this.setStyle("-fx-background-color: #9CFF31; -fx-border-color: Black");
-				
+				else
 					this.setStyle("");
 					
 			}

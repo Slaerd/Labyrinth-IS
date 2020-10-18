@@ -19,6 +19,7 @@ public class GameModel {
 	
 	
 	private ArrayList<Listener> listenerList;
+	private ArrayList<Tile> wallObjectBuffer;
 	
 	public GameModel() {
 		laby = Laby.getSquare();
@@ -26,13 +27,15 @@ public class GameModel {
 		wallVisited = new ArrayList<Tile>();
 		generateWallObjectList();
 		
-		
-		/*for(ArrayList<Tile> wallObject : wallObjectList) {
+		System.out.println("//////////////////////////\n"
+						+  "//// WALL OBJECT LIST ////\n"
+						+  "//////////////////////////\n");
+		for(ArrayList<Tile> wallObject : wallObjectList) {
 			System.out.print("[");
 			for(Tile tile : wallObject)
 				printTile(tile);
 			System.out.print("]\n");
-		}*/
+		}
 			
 				
 		playerList = new ArrayList<Player>();
@@ -49,42 +52,41 @@ public class GameModel {
 	 * Generates ArrayList of tiles of adjacent walls, useful for the drag n drop
 	 */
 	private void generateWallObjectList() {
+		ArrayList<Tile> wallObjectBuffer;
 		for(int i = 0; i < Laby.SIZE; i++) {
-			ArrayList<Tile> wallObject = new ArrayList<Tile>();
 			for(int j = 0; j < Laby.SIZE; j++) {
-				if(laby.get(i).get(j).getType() == Tile.WALL)
-					generateWallObject(i, j, wallObject);
-			}
-			
-			if(wallObject.size() != 0)
-				wallObjectList.add(wallObject);
+				wallObjectBuffer = new ArrayList<Tile>();
+				generateWallObject(i, j, wallObjectBuffer);
+				if(wallObjectBuffer.size() != 0) {
+					wallObjectList.add(wallObjectBuffer);
+				}
+			}	
 		}
 	}
 	
 	private void generateWallObject(int i, int j, ArrayList<Tile> buffer) {
 		Tile currentTile = laby.get(i).get(j);
-		if( !wallVisited.contains( currentTile ) ) {
-			buffer.add(currentTile);
-			wallVisited.add(currentTile);
+		if( !wallVisited.contains(currentTile) 
+			&& currentTile.getType() == Tile.WALL 
+			&& buffer.size() != Laby.WALLOBJECTMAXSIZE) {
 			
-			printTile(currentTile);
-			System.out.print("\n");
-			if(j + 1 < Laby.SIZE ) {
-				if(laby.get(i).get(j + 1).getType() == Tile.WALL && !wallVisited.contains(laby.get(i).get(j + 1)))
-					generateWallObject(i, j + 1, buffer);
-			}
-			if(i + 1 < Laby.SIZE) {
-				if(laby.get(i + 1).get(j).getType() == Tile.WALL && !wallVisited.contains(laby.get(i + 1).get(j)))
+				buffer.add(currentTile);
+				wallVisited.add(currentTile);
+				
+				if(i + 1 < Laby.SIZE) {
 					generateWallObject(i + 1, j, buffer);
-			}
-			if(j - 1 >= 0) {
-				if(laby.get(i).get(j - 1).getType() == Tile.WALL && !wallVisited.contains(laby.get(i).get(j - 1)))
-					generateWallObject(i, j - 1, buffer);
-			}
-			if(i - 1 >= 0) {
-				if(laby.get(i - 1).get(j).getType() == Tile.WALL && !wallVisited.contains(laby.get(i - 1).get(j)))
+				}
+				if(j + 1 < Laby.SIZE) {
+					generateWallObject(i, j + 1, buffer);
+				}
+				if(i - 1 >= 0) {
 					generateWallObject(i - 1, j, buffer);
-			}
+				}	
+				if(j - 1 >= 0) {
+					generateWallObject(i, j - 1, buffer);
+				}
+				
+							
 		}
 	}
 	

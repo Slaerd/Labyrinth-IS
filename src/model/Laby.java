@@ -4,7 +4,19 @@ import java.util.ArrayList;
 
 public class Laby {
 	public static final int SIZE = 10;
+	public static final int WALLOBJECTMAXSIZE = 4;
 	public static final String SQUARE = "square";
+	private static final int[][] MODSQUARE = {	{0,0,0,0,0,0,0,0,0,0},
+												{1,1,1,1,1,1,1,1,1,1},
+												{0,1,0,0,0,0,0,0,1,0},
+												{1,1,1,1,1,1,1,1,1,1},
+												{0,0,0,0,0,0,0,0,0,0},
+												{1,1,1,1,1,1,1,1,1,1},
+												{0,0,0,0,0,0,0,0,0,0},
+												{1,1,1,1,1,1,1,1,1,1},
+												{0,0,0,0,0,1,0,0,0,0},
+												{1,1,1,1,1,1,1,1,1,1}};
+	
 	public ArrayList<ArrayList<Tile>> labySquare;
 	
 	public Laby() {
@@ -19,10 +31,7 @@ public class Laby {
 			columnBuffer = new ArrayList<Tile>();
 			
 			for(int j = 0; j < SIZE; j++) {
-				if(j%2 == 0)
-					tileBuffer = new Tile(Tile.FLOOR,i,j);
-				else
-					tileBuffer = new Tile(Tile.WALL,i,j);
+				tileBuffer = new Tile(MODSQUARE[j][i],i,j);
 				columnBuffer.add(tileBuffer);
 			}
 			

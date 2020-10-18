@@ -80,10 +80,27 @@ public class TileButton extends ListenerButton{
 		});*/
 		
 	}
+	
+	private void setAccessibleStyle() {
+		this.setStyle("-fx-background-color: #31BFFF; -fx-border-color: Black");
+		
+		this.setOnMouseEntered(e->{
+			this.setStyle("-fx-background-color: #74D4FF; -fx-border-color: Black");
+		});
+		
+		this.setOnMouseExited(e->{
+			this.setStyle("-fx-background-color: #31BFFF; -fx-border-color: Black");
+		});
+		
+		this.setOnMousePressed(e->{
+			this.setStyle("-fx-background-color: #ABE5FF; -fx-border-color: Black; -fx-border-width: 3");
+		});
+	}
 
 	
 	public void update() {
-		this.setTextFill(Color.BLACK);
+		this.setTextFill(Color.GREEN);
+		this.setText(Integer.toString(x) + " " + Integer.toString(y));
 		
 		String style = new String();
 		int tileType = controller.getTileType(x, y);
@@ -100,11 +117,12 @@ public class TileButton extends ListenerButton{
 		if(controller.getPlayer(x, y) != -1) {
 			//this.setTextFill();
 			this.setText(Integer.toString(controller.getPlayer(x, y))); 
-		}else
-			this.setText("");
+		}
+		/*else
+			this.setText("");*/
 		
 		if(controller.isAccessible(x,y))
-			this.setStyle("-fx-background-color: #31BFFF; -fx-border-color: Black");
+			setAccessibleStyle();
 		else
 			this.setStyle(style);
 			
