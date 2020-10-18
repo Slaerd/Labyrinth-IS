@@ -1,92 +1,98 @@
 package model;
 
+import java.util.ArrayList;
+
 public class CharGenModel {
 	
 	public final int nbPlayers = 3;
+	public final int nbHeads = 5;
+	public final int nbBodies = 5;
+	public final int nbLegs = 5;
+
 	
-	String currentPlayer;
-	int currentHead;
-	int currentBody;
-	int currentLegs;
+	public int currentPlayer;
 	
+	public ArrayList<PlayerGraphics> players = new ArrayList<PlayerGraphics>();
+
 	public CharGenModel() {
-		this.currentPlayer = "1";
-		this.currentHead = 1;
-		this.currentBody = 1;
-		this.currentLegs = 1;
+		this.currentPlayer = 1;
 	}
 	
-	public String getCurrentPlayer() {
-		return currentPlayer;
+	public int getCurrentPlayer() {
+		return this.currentPlayer;
 	}
 	
-	public void setCurrentPlayer(String newCurrentPlayer) {
+	public void addPlayers() {
+		for(int i = 0; i < nbPlayers; i ++) {
+			players.add(new PlayerGraphics(i+1));	
+			System.out.println(players.get(i).getPlayerNumber());
+		}
+	}
+	
+	public void setCurrentPlayer(int newCurrentPlayer) {
 		this.currentPlayer = newCurrentPlayer;
 		System.out.println("Current player # : " + getCurrentPlayer());
 	}
 	
-	//used to change the display of the middle of the headPane
-	//atm we use numbers to differentiate head styles
-	public int getCurrentHead() {
-		return currentHead;
+	public int getCurrentHead(PlayerGraphics pg) {
+		return pg.getCurrentHead();
 	}
 
-	public void setCurrentHead(int newCurrentHead) {
-		this.currentHead = newCurrentHead;
+	public void setCurrentHead(int newCurrentHead, PlayerGraphics pg) {
+		pg.currentHead = newCurrentHead;
 	}
 	
-	public void newHeadRightArrow() {
-		this.currentHead = getCurrentHead() + 1;
-		setCurrentHead(this.currentHead);
+	public void newHeadRightArrow(PlayerGraphics pg) {
+		pg.currentHead = (getCurrentHead(pg) + 1)%nbHeads;
+		setCurrentHead(pg.currentHead, pg);
 	}
 	
-	public void newHeadLeftArrow() {
-		this.currentHead = getCurrentHead() - 1;
-		setCurrentHead(this.currentHead);
+	public void newHeadLeftArrow(PlayerGraphics pg) {
+		if(pg.getCurrentHead()==0) {
+			setCurrentHead(0, pg);
+		}else {
+		pg.currentHead = Math.abs((getCurrentHead(pg) - 1)%nbHeads);
+		setCurrentHead(pg.getCurrentHead(), pg);
+		}
 	}
 	
 	//same for body
-	public int getCurrentBody() {
-		return currentBody;
+	public int getCurrentBody(PlayerGraphics pg) {
+		return pg.currentBody;
 	}
 
-	public void setCurrentBody(int newCurrentBody) {
-		this.currentBody = newCurrentBody;
+	public void setCurrentBody(int newCurrentBody,PlayerGraphics pg) {
+		pg.currentBody = newCurrentBody;
 	}
 	
-	public void newBodyRightArrow() {
-		this.currentBody = getCurrentBody() + 1;
-		setCurrentBody(this.currentBody);
+	public void newBodyRightArrow(PlayerGraphics pg) {
+		pg.currentBody = Math.abs((getCurrentBody(pg) + 1)%nbBodies);
+		setCurrentBody(pg.currentBody, pg);
 	}
 	
-	public void newBodyLeftArrow() {
-		this.currentBody = getCurrentBody() - 1;
-		setCurrentBody(this.currentBody);
+	public void newBodyLeftArrow(PlayerGraphics pg) {
+		pg.currentBody = Math.abs((getCurrentBody(pg) - 1)%nbBodies);
+		setCurrentBody(pg.currentBody, pg);
 	}
 	//same for legs
-	public int getCurrentLegs() {
-		return currentLegs;
+	public int getCurrentLegs(PlayerGraphics pg) {
+		return pg.currentLegs;
 	}
 
-	public void setCurrentLegs(int newCurrentLegs) {
-		this.currentLegs = newCurrentLegs;
+	public void setCurrentLegs(int newCurrentLegs, PlayerGraphics pg) {
+		pg.currentLegs = newCurrentLegs;
 	}
 	
-	public void newLegsRightArrow() {
-		this.currentLegs = getCurrentLegs() + 1;
-		setCurrentLegs(this.currentLegs);
+	public void newLegsRightArrow(PlayerGraphics pg) {
+		pg.currentLegs = (getCurrentLegs(pg) + 1)%nbLegs;
+		setCurrentLegs(pg.currentLegs, pg);
 	}
 	
-	public void newLegsLeftArrow() {
-		this.currentLegs = getCurrentLegs() - 1;
-		setCurrentLegs(this.currentLegs);
+	public void newLegsLeftArrow(PlayerGraphics pg) {
+		pg.currentLegs = (getCurrentLegs(pg) - 1)%nbLegs;
+		setCurrentLegs(pg.currentLegs, pg);
 	}
 	
-	//adds one to the player number
-	public void changePlayerNumber() {
-		int tmp = Integer.parseInt(this.currentPlayer);
-		tmp+=1;
-		this.currentPlayer = Integer.toString(tmp);
-	}
+	
 
 }
