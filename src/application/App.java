@@ -14,13 +14,14 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+<<<<<<< HEAD
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+=======
+>>>>>>> game
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.*;
@@ -29,6 +30,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import controller.*;
+import view.ListenerButton;
 import view.TileButton;
 import model.CharGenModel;
 
@@ -58,11 +60,14 @@ public class App{
 	
 	//labSelect widgets
 	private Button labBackButton = new Button("Back");
+<<<<<<< HEAD
 	private Button charGenLabButton = new Button("Character creation");
 	
 	//Game stuff
 	private GameController gameController;
 	
+=======
+>>>>>>> game
 	private Button labSquare = new Button();
 	private Button labRectangle = new Button();
 	private Button labCross = new Button();
@@ -70,6 +75,7 @@ public class App{
 	private Label labelRectangle = new Label("The Rectangle");
 	private Label labelCross = new Label("The Cross");
 	
+<<<<<<< HEAD
 	//charGen widgets
 	private Button doneButton = new Button("DONE");
 	private Button rightArrowHead = new Button(">");
@@ -114,6 +120,13 @@ public class App{
 	private Image legs2 = new Image("file: images.legs2.jpg");
 	private ImageView legs2IV = new ImageView(legs2);
 	private StackPane legsImages = new StackPane();
+=======
+	//Game stuff
+	private GameController gameController;
+	
+
+	
+>>>>>>> game
 	
 	public App(Stage stage) {
 		this.primaryStage = stage;
@@ -182,7 +195,6 @@ public class App{
 		labSquare.setOnMouseClicked(e->{
 			//TODO 1 : Kevin | Ajouter le setScene game
 			if(e.getButton().equals(MouseButton.PRIMARY))
-				
 				System.out.println("Square");
 			
 		});
@@ -270,6 +282,7 @@ public class App{
 		
 		charGenScene = new Scene(charGenRoot);
 		
+<<<<<<< HEAD
 		for(Node node : headImages.getChildren()) {
 			if(node.getId()==Integer.toString(myCharGenController.myModel.players.get(myCharGenController.myModel.currentPlayer).getCurrentHead())) {
 				node.setDisable(false);
@@ -402,4 +415,35 @@ public class App{
 		}
 	
 	
+=======
+		ListenerButton nextTurn = new ListenerButton("Pass",gameController) {
+			public void update() {
+				if(gameController.getActionsLeft() == 0)
+					this.setStyle("-fx-background-color: #9CFF31; -fx-border-color: Black");
+				else
+					this.setStyle("");
+					
+			}
+		};
+		
+		nextTurn.setPrefSize(100, 100);
+		nextTurn.setOnMouseClicked(e -> {
+			if(e.getButton().equals(MouseButton.PRIMARY))
+				gameController.nextTurn();
+		});
+		gameController.addListener(nextTurn);
+		
+		TileButton buffer;
+		for(int i = 0; i < Laby.SIZE; i++) {
+			for(int j = 0; j < Laby.SIZE; j++) {
+				buffer = new TileButton(i, j, gameController);
+				laby.add(buffer, i, j);
+			}
+		}
+		
+		root.setCenter(laby);
+		root.setBottom(nextTurn);
+		gameScene = new Scene(root, 1000,600);
+	}
+>>>>>>> game
 }
