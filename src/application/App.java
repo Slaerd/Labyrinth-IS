@@ -15,13 +15,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-<<<<<<< HEAD
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-=======
->>>>>>> game
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.*;
@@ -58,24 +56,8 @@ public class App{
 	public Button closeButton = new Button("Close");
 	public Button charGenMenuButton = new Button("Character creation");
 	
-	//labSelect widgets
-	private Button labBackButton = new Button("Back");
-<<<<<<< HEAD
-	private Button charGenLabButton = new Button("Character creation");
+	//labSelect widget
 	
-	//Game stuff
-	private GameController gameController;
-	
-=======
->>>>>>> game
-	private Button labSquare = new Button();
-	private Button labRectangle = new Button();
-	private Button labCross = new Button();
-	private Label labelSquare = new Label("The Square");
-	private Label labelRectangle = new Label("The Rectangle");
-	private Label labelCross = new Label("The Cross");
-	
-<<<<<<< HEAD
 	//charGen widgets
 	private Button doneButton = new Button("DONE");
 	private Button rightArrowHead = new Button(">");
@@ -120,20 +102,14 @@ public class App{
 	private Image legs2 = new Image("file: images.legs2.jpg");
 	private ImageView legs2IV = new ImageView(legs2);
 	private StackPane legsImages = new StackPane();
-=======
 	//Game stuff
 	private GameController gameController;
-	
-
-	
->>>>>>> game
 	
 	public App(Stage stage) {
 		this.primaryStage = stage;
 		gameController = new GameController();
 		gameController.addModel(new GameModel());
 		
-		//initLabSelect();
 		initGameUI();
 		
 		
@@ -169,6 +145,15 @@ public class App{
 	}
 	
 	private void initLabSelect() {
+		
+		Button labBackButton = new Button("Back");
+		Button charGenLabButton = new Button("Character creation");
+		Button labSquare = new Button();
+		Button labRectangle = new Button();
+		Button labCross = new Button();
+		Label labelSquare = new Label("The Square");
+		Label labelRectangle = new Label("The Rectangle");
+		Label labelCross = new Label("The Cross");
 		
 		labBackButton.setOnMouseClicked(e->{
 			primaryStage.setScene(mainMenuScene);
@@ -229,19 +214,39 @@ public class App{
 	}
 	
 	
-	  private void initGameUI() { BorderPane root = new BorderPane(); GridPane laby
-	  = new GridPane();
-	  
-	  TileButton buffer; for(int i = 0; i < Laby.SIZE; i++) { for(int j = 0; j <
-	  Laby.SIZE; j++) { buffer = new TileButton(i, j, gameController);
-	  laby.add(buffer, i, j); } }
-	  
-	  root.setCenter(laby); gameScene = new Scene(root, 1000,600);
-	  labSelect.setSpacing(25); labSelect.setPadding(new Insets(50,50,50,50));
-	  labSelect.setAlignment(Pos.CENTER);
-	  //labSelect.getChildren().addAll(sceneSwitchBox,lineOne,lineTwo);
-	  
-	  labSelectScene = new Scene(labSelect); }
+	 private void initGameUI() {
+	  BorderPane root = new BorderPane();
+	  GridPane laby = new GridPane();
+  
+	  ListenerButton nextTurn = new ListenerButton("Pass",gameController) {
+			public void update() {
+				if(gameController.getActionsLeft() == 0)
+					this.setStyle("-fx-background-color: #9CFF31; -fx-border-color: Black");
+				else
+					this.setStyle("");
+					
+			}
+		};
+		
+		nextTurn.setPrefSize(100, 100);
+		nextTurn.setOnMouseClicked(e -> {
+			if(e.getButton().equals(MouseButton.PRIMARY))
+				gameController.nextTurn();
+		});
+		gameController.addListener(nextTurn);
+		
+		TileButton buffer;
+		for(int i = 0; i < Laby.SIZE; i++) {
+			for(int j = 0; j < Laby.SIZE; j++) {
+				buffer = new TileButton(i, j, gameController);
+				laby.add(buffer, i, j);
+			}
+		}
+		
+		root.setCenter(laby);
+		root.setBottom(nextTurn);
+		gameScene = new Scene(root, 1000,600);
+	}
 	 
 	
 	public void initCharGen() {
@@ -282,7 +287,6 @@ public class App{
 		
 		charGenScene = new Scene(charGenRoot);
 		
-<<<<<<< HEAD
 		for(Node node : headImages.getChildren()) {
 			if(node.getId()==Integer.toString(myCharGenController.myModel.players.get(myCharGenController.myModel.currentPlayer).getCurrentHead())) {
 				node.setDisable(false);
@@ -412,38 +416,5 @@ public class App{
 				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.myModel.players.get(2))));
 			}
 		});
-		}
-	
-	
-=======
-		ListenerButton nextTurn = new ListenerButton("Pass",gameController) {
-			public void update() {
-				if(gameController.getActionsLeft() == 0)
-					this.setStyle("-fx-background-color: #9CFF31; -fx-border-color: Black");
-				else
-					this.setStyle("");
-					
-			}
-		};
-		
-		nextTurn.setPrefSize(100, 100);
-		nextTurn.setOnMouseClicked(e -> {
-			if(e.getButton().equals(MouseButton.PRIMARY))
-				gameController.nextTurn();
-		});
-		gameController.addListener(nextTurn);
-		
-		TileButton buffer;
-		for(int i = 0; i < Laby.SIZE; i++) {
-			for(int j = 0; j < Laby.SIZE; j++) {
-				buffer = new TileButton(i, j, gameController);
-				laby.add(buffer, i, j);
-			}
-		}
-		
-		root.setCenter(laby);
-		root.setBottom(nextTurn);
-		gameScene = new Scene(root, 1000,600);
 	}
->>>>>>> game
 }

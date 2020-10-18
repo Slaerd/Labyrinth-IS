@@ -3,7 +3,7 @@ package controller;
 import model.CharGenModel;
 import model.PlayerGraphics;
 
-public class CharGenController {
+public class CharGenController implements Controller{
 
 	public CharGenModel myModel = new CharGenModel();
 	
