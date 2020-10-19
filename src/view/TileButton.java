@@ -6,6 +6,7 @@ import controller.GameController;
 import event.Listener;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
@@ -41,12 +42,10 @@ public class TileButton extends ListenerButton{
 		x = i;
 		y = j;
 		
-		setFloorStyle();
-		
 		this.setOnMouseClicked(e->{
 			
 			if(e.getButton().equals(MouseButton.PRIMARY)){ //Tile clicking event
-				controller.movePlayer(controller.getTurnPlayer(),x,y);
+				controller.movePlayer(x,y);
 			}
 			
 			if(e.getButton().equals(MouseButton.SECONDARY)) { //Remove dragNdrop flags
@@ -59,29 +58,61 @@ public class TileButton extends ListenerButton{
 		controller.addListener(this);
 		update();
 	}
-
+	
+	private void setCustomStyle(int tileType) {
+		switch(tileType) {
+			case Tile.FLOOR:
+				setFloorStyle();
+				break;
+			case Tile.WALL:
+				setWallStyle();
+				break;
+			case Tile.VOID:
+				setVoidStyle();
+				break;
+		}
+	}
 	private void setFloorStyle() {
 		this.setStyle("-fx-background-color: #dddddd; -fx-border-color: Black");
+		
+		this.setOnMouseEntered(e->{
+		});
+		
+		this.setOnMouseExited(e->{
+		});
+		
+		this.setOnMousePressed(e->{
+		});
 	}
+	
+	private void setVoidStyle() {
+		this.setStyle("-fx-background-color: #111111; -fx-border-color: Black");
+		
+		this.setOnMouseEntered(e->{
+		});
+		
+		this.setOnMouseExited(e->{
+		});
+		
+		this.setOnMousePressed(e->{
+		});
+	}
+	
 	private void setWallStyle() {
 		
 		this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
 		
-		
-		/*this.setOnMouseEntered(e->{
-			if(!controller.isTileClicked(x, y))
-				this.setStyle("-fx-background-color: #5a5a5a; -fx-border-color: Black");
+		this.setOnMouseEntered(e->{
+			if(controller.getActionsLeft() > 0)
+				this.setCursor(Cursor.OPEN_HAND);
 		});
 		
 		this.setOnMouseExited(e->{
-			if(!controller.isTileClicked(x, y))
-				this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
+			this.setCursor(Cursor.DEFAULT);
 		});
 		
 		this.setOnMousePressed(e->{
-			if(!controller.isTileClicked(x, y) && e.getButton().equals(MouseButton.PRIMARY))
-				this.setStyle("-fx-background-color: #ffffff; -fx-border-color: Green; -fx-border-width: 3");
-		});*/
+		});
 		
 	}
 	
@@ -108,12 +139,13 @@ public class TileButton extends ListenerButton{
 			
 		this.setOnDragDetected(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-            	
-            	if(controller.getTileType(x, y) == Tile.WALL) {
+            	if(controller.getTileType(x, y) == Tile.WALL && controller.getActionsLeft() > 0) {
+            		controller.removeWallObject(x, y);
 	                Dragboard db = TileButton.this.startDragAndDrop(TransferMode.ANY);
 	                
 	                ClipboardContent content = new ClipboardContent();
 	                content.putString(Integer.toString(x) + "," + Integer.toString(y));
+	                
 	                db.setContent(content);
             	}
             }
@@ -121,11 +153,12 @@ public class TileButton extends ListenerButton{
 		
 		this.setOnDragDone(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-            	if(controller.getTileType(x, y) == Tile.WALL) {
-	                if (event.getTransferMode() == TransferMode.MOVE) {
-	                	controller.removeWallObject(x, y);
-	                }
-            	}
+            	TileButton.this.setCursor(Cursor.DEFAULT);
+                if (!controller.isDropSuccess()) {
+                	controller.restoreWall();
+                }else {
+                	controller.movedWall();
+                }
             }
         });
 		
@@ -134,47 +167,27 @@ public class TileButton extends ListenerButton{
 		////////////////
 		
 		this.setOnDragOver(new EventHandler<DragEvent>() {
-            public void handle(DragEvent event) {
-            	if(controller.getTileType(x, y) == Tile.FLOOR && controller.getPlayer(x, y) == -1) { //only react if the tile isn't clicked nor flagged
-	                if (event.getGestureSource() != TileButton.this &&
-	                        event.getDragboard().hasString()) {
-	                    event.acceptTransferModes(TransferMode.MOVE);
-	                };
+			public void handle(DragEvent event) {
+				if (event.getDragboard().hasString()) {
+                	Dragboard db = event.getDragboard();
+                	String wallObjectOrigin = (String) db.getContent(DataFormat.PLAIN_TEXT);
+                    if(controller.setWallObjectShadow(x,y,wallObjectOrigin))
+                    	event.acceptTransferModes(TransferMode.MOVE);
             	}
-            }
-        });
-		
-        this.setOnDragEntered(new EventHandler<DragEvent>() {
-            public void handle(DragEvent event) {
-                 if (event.getDragboard().hasString()) {
-                	 System.out.println("DragPos : " + x + " " + y);
-                	 Dragboard db = event.getDragboard();
-                	 String wallObjectOrigin = (String) db.getContent(DataFormat.PLAIN_TEXT);
-                     controller.setWallObjectShadow(x,y,wallObjectOrigin);
-                 }
+				TileButton.this.setCursor(Cursor.CLOSED_HAND);
             }
         });
         
         this.setOnDragExited(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-                /* mouse moved away, remove the graphical cues */
             	controller.unshadow();
             }
         });
         
         this.setOnDragDropped(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-            	/*if(controller.isAccessible(x, y)) {
-	                Dragboard db = event.getDragboard();
-	                boolean success = false;
-	                String key = (String) db.getContent(DataFormat.PLAIN_TEXT); //get the flagStand number from the dragboard
-	                if ( Integer.parseInt(key) >= 0) {
-	                   controller.putFlag(x, y,Integer.parseInt(key)); //put it onto the tile
-	                   success = true;
-	                }
-	                event.setDropCompleted(success);
-	             }*/
-            	controller.unshadow();
+            	controller.shadowToWall();
+            	event.setDropCompleted(false);	
             }
         });
 
@@ -182,31 +195,17 @@ public class TileButton extends ListenerButton{
 	
 	public void update() {
 		this.setTextFill(Color.GREEN);
-		this.setText(Integer.toString(x) + " " + Integer.toString(y));
-		
-		String style = new String();
-		int tileType = controller.getTileType(x, y);
-		
-		if(tileType == Tile.FLOOR)
-			style = "-fx-background-color: #dddddd; -fx-border-color: Black";
-		if(tileType == Tile.WALL) {
-			style = "-fx-background-color: #3f3f3f; -fx-border-color: Black";
-		}
-		if(tileType == Tile.VOID) {
-			style = "-fx-background-color: #111111; -fx-border-color: Black";
-		}
-				
-		if(controller.getPlayer(x, y) != -1) {
-			//this.setTextFill();
-			this.setText(Integer.toString(controller.getPlayer(x, y))); 
-		}
-		/*else
-			this.setText("");*/
+		//this.setText(Integer.toString(x) + " " + Integer.toString(y));
 		
 		if(controller.isAccessible(x,y))
 			setAccessibleStyle();
 		else
-			this.setStyle(style);
+			setCustomStyle(controller.getTileType(x, y));
+				
+		if(controller.getPlayer(x, y) != -1)
+			this.setText(Integer.toString(controller.getPlayer(x, y))); 
+		else
+			this.setText("");
 		
 		if(controller.isShadowed(x, y))
 			if(controller.getTileType(x,y) > 0 || controller.getPlayer(x, y) != -1)

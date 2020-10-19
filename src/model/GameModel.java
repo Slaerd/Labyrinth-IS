@@ -23,11 +23,12 @@ public class GameModel {
 	
 	public GameModel() {
 		laby = Laby.getSquare();
+		wallObjectBuffer = new ArrayList<Tile>();
 		wallObjectList = new ArrayList<ArrayList<Tile>>();
 		wallVisited = new ArrayList<Tile>();
 		generateWallObjectList();
 		
-		System.out.println("//////////////////////////\n"
+		/*System.out.println("//////////////////////////\n"
 						+  "//// WALL OBJECT LIST ////\n"
 						+  "//////////////////////////\n");
 		for(ArrayList<Tile> wallObject : wallObjectList) {
@@ -35,7 +36,7 @@ public class GameModel {
 			for(Tile tile : wallObject)
 				printTile(tile);
 			System.out.print("]\n");
-		}
+		}*/
 			
 				
 		playerList = new ArrayList<Player>();
@@ -91,19 +92,19 @@ public class GameModel {
 	}
 	
 	private void templatePlayers() {
-		for(int i = 0; i < 1; i++) {
+		for(int i = 0; i < 2; i++) {
 			playerList.add(new Player("bruh" + Integer.toString(i),i,0));
 			laby.get(i).get(0).putPlayer(i);
 		}
 	};
 	
-	public void movePlayer(int n, int x, int y) {
-		Player currentPlayer = playerList.get(n);
+	public void movePlayer(int x, int y) {
+		Player currentPlayer = playerList.get(turnPlayer);
 		
 		if(accessible.contains(laby.get(x).get(y))) {
 			laby.get(currentPlayer.x).get(currentPlayer.y).removePlayer();
 			currentPlayer.moveTo(x, y);
-			laby.get(x).get(y).putPlayer(n);
+			laby.get(x).get(y).putPlayer(turnPlayer);
 			currentPlayer.spendAction();
 		}
 		
@@ -116,8 +117,17 @@ public class GameModel {
 			l.update();
 	}
 	
-	public void moveWall() {
+	public void movedWall() {
+		Player currentPlayer = playerList.get(turnPlayer);
 		
+		currentPlayer.spendAction();
+		if(currentPlayer.getActions() > 0)
+			generateAccessibles(currentPlayer);
+		else
+			accessible = new ArrayList<Tile>();
+		
+		for(Listener listener : listenerList)
+			listener.update();
 	}
 	
 	private void generateAccessibles(Player p) {
@@ -206,78 +216,6 @@ public class GameModel {
 	//// WALL MANIPULATION METHODS ////
 	///////////////////////////////////
 	
-	/*public void setWallObjectShadow(int x, int y){
-		ArrayList<Tile> myWallObject = new ArrayList<Tile>();
-		
-		for(ArrayList<Tile> wallObject : wallObjectList){
-			if(wallObject.contains(laby.get(x).get(y))){
-				myWallObject = wallObject;
-				break;
-			}
-		}
-		for(Tile tile : myWallObject){
-			tile.setShadow(true);
-		}
-	}
-	
-	public void setWallObjectWall(int x, int y) {
-		ArrayList<Tile> myWallObject = new ArrayList<Tile>();
-		
-		for(ArrayList<Tile> wallObject : wallObjectList){
-			if(wallObject.contains(laby.get(x).get(y))){
-				myWallObject = wallObject;
-				break;
-			}
-		}
-		for(Tile tile : myWallObject){
-			tile.setShadow(true);
-		}
-	}*/
-	
-	/**
-	 * Puts a wallObject found at x,y into a string
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public String wallObjectToString(int x, int y) {
-		String text = "";
-		ArrayList<Tile> myWallObject = new ArrayList<Tile>();
-		
-		for(ArrayList<Tile> wallObject : wallObjectList){
-			if(wallObject.contains(laby.get(x).get(y))){
-				myWallObject = wallObject;
-				break;
-			}
-		}
-		for(Tile tile : myWallObject)
-			text += Integer.toString(x - tile.x) + "," + Integer.toString(y - tile.y) + ";" ;
-		return text;
-	}
-	
-	
-	/**
-	 * Places the wallObject on the labyrinth according to the dropped position
-	 * <br> and relative distance in string format
-	 * @param x tile position of wallObject dropped
-	 * @param y tile position of wallObject dropped
-	 * @param text relative position in the following format "deltaX1,deltaY1;deltaX2,deltaY2;...."
-	 */
-	public void setDragAndDropWall(int x, int y, String text) {
-		ArrayList<int[]> relativeDistance = new ArrayList<int[]>();
-		
-		String[] coordinates = text.split(";"); //Format of coordinates is { "deltaX,deltaY" }
-		
-		int[] xy = new int[2];
-		for(int i = 0; i < coordinates.length - 1; i++) {
-			String[] xyTile = coordinates[i].split(",");	//Format of xyTile is {deltaX,deltaY}
-			xy[0] = Integer.parseInt(xyTile[0]);
-			xy[1] = Integer.parseInt(xyTile[1]);
-			
-		}
-		relativeDistance.add(xy);
-	}
-	
 	/**
 	 * Sets shadow of the wallObject for the drag and drop motion
 	 * <br> nX and nY are the current destination for the wallObject
@@ -285,30 +223,29 @@ public class GameModel {
 	 * @param nY
 	 * @param wallObjectOrigin position of the wallObject before the dnd motion
 	 */
-	public void setWallObjectShadow(int nX, int nY, String wallObjectOrigin) {
+	public boolean setWallObjectShadow(int nX, int nY, String wallObjectOrigin) {
 		String[] coordinates = wallObjectOrigin.split(",");
-		
+		boolean isDroppable = true;
 		int oX = Integer.parseInt(coordinates[0]);
 		int oY = Integer.parseInt(coordinates[1]);
 		
-		ArrayList<Tile> myWallObject = new ArrayList<Tile>();
-		
-		for(ArrayList<Tile> wallObject : wallObjectList){
-			if(wallObject.contains(laby.get(oX).get(oY))){
-				myWallObject = wallObject;
-				break;
+		for(Tile tile : wallObjectBuffer){
+			
+			if(nX + (tile.x - oX) >= 0 && nX + (tile.x - oX) < Laby.SIZE 
+			&& nY + (tile.y - oY) >= 0 && nY + (tile.y - oY) < Laby.SIZE) {
+				Tile newWall = laby.get(nX + (tile.x - oX)).get(nY + (tile.y - oY));
+				newWall.setShadow(true);
+				if(newWall.getType() > 0 || newWall.getPlayerNumber() != -1)
+					isDroppable = false;
+			}else {
+				isDroppable = false;
 			}
 		}
 		
-		for(Tile tile : myWallObject){
-			
-			if(nX - (oX - tile.x) >= 0 && nX - (oX - tile.x) < Laby.SIZE 
-			&& nY - (oY - tile.y) >= 0 && nY - (oY - tile.y) < Laby.SIZE)
-				laby.get(nX - (oX - tile.x)).get(nY - (oY - tile.y)).setShadow(true);
-		}
-		System.out.println("OG Pos : " + oX + " " + oY);
+		//System.out.println("OG Pos : " + oX + " " + oY);
 		for(Listener listener : listenerList)
 			listener.update();
+		return isDroppable;
 	}
 
 	public boolean isShadowed(int x, int y) {
@@ -323,5 +260,48 @@ public class GameModel {
 		for(Listener listener : listenerList)
 			listener.update();
 	}
+
+	public void removeWallObject(int x, int y) {
+		
+		for(int i = 0; i < wallObjectList.size(); i++){
+			if(wallObjectList.get(i).contains(laby.get(x).get(y))){
+				
+				wallObjectBuffer = wallObjectList.get(i);
+				
+				for(Tile tile : wallObjectList.get(i))
+					tile.setType(Tile.FLOOR);
+				
+				wallObjectList.remove(i);
+				break;
+			}
+		}
+		for(Listener listener : listenerList)
+			listener.update();
+	}
 	
+	public void shadowToWall() {
+		ArrayList<Tile> newWallObject = new ArrayList<Tile>();
+		for(ArrayList<Tile> line : laby) {
+			for(Tile tile : line) {
+				if(tile.isShadowed()) {
+					tile.setType(Tile.WALL);
+					newWallObject.add(tile);
+				}
+			}
+		}
+		wallObjectList.add(newWallObject);
+		
+		wallObjectBuffer = new ArrayList<Tile>();	
+	}
+
+	public void restoreWall() {
+		for(Tile tile : wallObjectBuffer)
+			laby.get(tile.x).get(tile.y).setType(Tile.WALL);
+		
+		wallObjectList.add(wallObjectBuffer);
+	}
+
+	public boolean isDropSuccess() {
+		return wallObjectBuffer.size() == 0;
+	}
 }

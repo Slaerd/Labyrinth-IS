@@ -28,8 +28,8 @@ public class GameController implements Controller{
 	 * @param x
 	 * @param y
 	 */
-	public void movePlayer(int n, int x, int y) {
-		model.movePlayer(n, x, y);
+	public void movePlayer(int x, int y) {
+		model.movePlayer(x, y);
 	}
 
 	public void addListener(Listener listener) {
@@ -77,20 +77,34 @@ public class GameController implements Controller{
 	}
 
 	public void removeWallObject(int x, int y) {
-		// TODO Auto-generated method stub
-		
+		model.removeWallObject(x,y);
 	}
 	
 	public boolean isShadowed(int x, int y) {
 		return model.isShadowed(x,y);
 	}
 
-	public void setWallObjectShadow(int x, int y, String wallObjectOrigin) {
-		model.setWallObjectShadow(x,y,wallObjectOrigin);
+	public boolean setWallObjectShadow(int x, int y, String wallObjectOrigin) {
+		return model.setWallObjectShadow(x,y,wallObjectOrigin);
 		
 	}
 	
 	public void unshadow() {
 		model.unshadow();
+	}
+	
+	public void restoreWall() {
+		model.restoreWall();
+	}
+	public void shadowToWall() {
+		model.shadowToWall();
+	}
+	
+	public boolean isDropSuccess() {
+		return model.isDropSuccess();
+	}
+	
+	public void movedWall() {
+		model.movedWall();
 	}
 }

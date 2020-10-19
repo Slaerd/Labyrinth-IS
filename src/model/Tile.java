@@ -28,6 +28,10 @@ public class Tile {
 		specialEvent = special;
 	}
 	
+	public void setType(int type) {
+		this.tileType = type;
+	}
+	
 	public int getType() {
 		return tileType;
 	}
