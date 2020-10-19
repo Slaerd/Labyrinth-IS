@@ -12,9 +12,10 @@ public class Tile {
 	private int playerNumber = -1;
 	private int tileType;
 	private int specialEvent = 0;
+	private boolean shadowMode = false; //Tracks if a drag and drop motion is happening
 	
-	public int x;
-	public int y;
+	protected int x;
+	protected int y;
 	
 	public Tile(int type, int x, int y){
 		tileType = type;
@@ -25,6 +26,10 @@ public class Tile {
 	public Tile(int type, int special) {
 		tileType = type;
 		specialEvent = special;
+	}
+	
+	public void setType(int type) {
+		this.tileType = type;
 	}
 	
 	public int getType() {
@@ -38,6 +43,7 @@ public class Tile {
 	public void putPlayer(int n) {
 		playerNumber = n;
 	}
+
 	public void removePlayer() {
 		playerNumber = -1;
 	}
@@ -49,5 +55,11 @@ public class Tile {
 	//// WALL METHODS ////
 	//////////////////////
 	
-	
+	public boolean isShadowed() {
+		return shadowMode;
+	}
+
+	public void setShadow(boolean shadowMode) {
+		this.shadowMode = shadowMode;
+	}
 }

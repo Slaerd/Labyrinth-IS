@@ -103,7 +103,6 @@ public class App{
 	private ImageView legs2IV = new ImageView(legs2);
 	private StackPane legsImages = new StackPane();
 	//Game stuff
-	
 	private GameController gameController;
 	
 	public App(Stage stage) {

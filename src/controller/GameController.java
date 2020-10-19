@@ -1,14 +1,17 @@
 package controller;
 
+import java.util.ArrayList;
+
 import event.Listener;
 import model.*;
 import view.TileButton;
 
 public class GameController implements Controller{
 	private GameModel model;
+	private ArrayList<TileButton> tiles;
 	
 	public GameController() {
-		
+		tiles = new ArrayList<TileButton>();
 	}
 	
 	/**
@@ -25,8 +28,8 @@ public class GameController implements Controller{
 	 * @param x
 	 * @param y
 	 */
-	public void movePlayer(int n, int x, int y) {
-		model.movePlayer(n, x, y);
+	public void movePlayer(int x, int y) {
+		model.movePlayer(x, y);
 	}
 
 	public void addListener(Listener listener) {
@@ -71,5 +74,37 @@ public class GameController implements Controller{
 
 	public int getTileType(int x, int y) {
 		return model.getTileType(x, y);
+	}
+
+	public void removeWallObject(int x, int y) {
+		model.removeWallObject(x,y);
+	}
+	
+	public boolean isShadowed(int x, int y) {
+		return model.isShadowed(x,y);
+	}
+
+	public boolean setWallObjectShadow(int x, int y, String wallObjectOrigin) {
+		return model.setWallObjectShadow(x,y,wallObjectOrigin);
+		
+	}
+	
+	public void unshadow() {
+		model.unshadow();
+	}
+	
+	public void restoreWall() {
+		model.restoreWall();
+	}
+	public void shadowToWall() {
+		model.shadowToWall();
+	}
+	
+	public boolean isDropSuccess() {
+		return model.isDropSuccess();
+	}
+	
+	public void movedWall() {
+		model.movedWall();
 	}
 }
