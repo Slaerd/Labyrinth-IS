@@ -1,14 +1,17 @@
 package controller;
 
+import java.util.ArrayList;
+
 import event.Listener;
 import model.*;
 import view.TileButton;
 
 public class GameController implements Controller{
 	private GameModel model;
+	private ArrayList<TileButton> tiles;
 	
 	public GameController() {
-		
+		tiles = new ArrayList<TileButton>();
 	}
 	
 	/**
@@ -71,5 +74,23 @@ public class GameController implements Controller{
 
 	public int getTileType(int x, int y) {
 		return model.getTileType(x, y);
+	}
+
+	public void removeWallObject(int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public boolean isShadowed(int x, int y) {
+		return model.isShadowed(x,y);
+	}
+
+	public void setWallObjectShadow(int x, int y, String wallObjectOrigin) {
+		model.setWallObjectShadow(x,y,wallObjectOrigin);
+		
+	}
+	
+	public void unshadow() {
+		model.unshadow();
 	}
 }
