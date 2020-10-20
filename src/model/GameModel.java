@@ -192,6 +192,8 @@ public class GameModel {
 			
 			laby.get(dead.xSpawn).get(dead.ySpawn).putPlayer(killer.target);
 			laby.get(killer.xSpawn).get(killer.ySpawn).putPlayer(turnPlayer);
+			
+			nextTurn();
 		}else {
 			gameState = true;
 		}
@@ -243,12 +245,23 @@ public class GameModel {
 		}
 	}
 	
+	public void hoverWallObject(int x, int y) {
+		for(ArrayList<Tile> wallObject : wallObjectList) {
+			if(wallObject.contains(laby.get(x).get(y))) {
+				for(Tile tile : wallObject)
+					tile.setHover(true);
+				break;
+			}
+		}
+		notifyListeners();
+	}
 	/**
 	 * Sets shadow of the wallObject for the drag and drop motion
 	 * <br> nX and nY are the current destination for the wallObject
 	 * @param nX 
 	 * @param nY
 	 * @param wallObjectOrigin position of the wallObject before the dnd motion
+	 * @return if the drop was valid
 	 */
 	public boolean setWallObjectShadow(int nX, int nY, String wallObjectOrigin) {
 		String[] coordinates = wallObjectOrigin.split(",");
@@ -275,11 +288,21 @@ public class GameModel {
 		notifyListeners();
 		return isDroppable;
 	}
-
+	
+	public boolean isHovered(int x, int y) {
+		return laby.get(x).get(y).isHovered();
+	}
 	public boolean isShadowed(int x, int y) {
 		return laby.get(x).get(y).isShadowed();
 	}
-
+	
+	public void unhover() {
+		for(ArrayList<Tile> line : laby) {
+			for(Tile tile : line)
+				tile.setHover(false);
+		}
+		notifyListeners();
+	}
 	public void unshadow() {
 		for(ArrayList<Tile> line : laby) {
 			for(Tile tile : line)

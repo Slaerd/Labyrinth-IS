@@ -94,22 +94,38 @@ public class TileButton extends ListenerButton{
 		this.setOnMousePressed(e->{
 		});
 	}	
+	
 	private void setWallStyle() {
 		
 		this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
 		
 		this.setOnMouseEntered(e->{
-			if(controller.getActionsLeft() > 0)
+			if(controller.getActionsLeft() > 0) {
 				this.setCursor(Cursor.OPEN_HAND);
+				controller.hoverWallObject(x, y);
+				System.out.print("in : " + x + " " + y);
+			}
 		});
 		
 		this.setOnMouseExited(e->{
+			controller.unhover();
+			System.out.println("out");
 			this.setCursor(Cursor.DEFAULT);
 		});
 		
 		this.setOnMousePressed(e->{
+			this.setCursor(Cursor.CLOSED_HAND);
 		});
 		
+		this.setOnMouseReleased(e->{
+			this.setCursor(Cursor.DEFAULT);
+		});
+		
+		if(controller.isHovered(x,y)) {
+			this.setStyle("-fx-background-color: #5f5f5f; -fx-border-color: Black");
+		}else {
+			this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
+		}
 	}
 	private void setAccessibleStyle() {
 		this.setStyle("-fx-background-color: #31BFFF; -fx-border-color: Black");
@@ -151,6 +167,7 @@ public class TileButton extends ListenerButton{
 		this.setOnDragDone(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
             	//System.out.println("bruh");
+        		event.consume();
                 if (!controller.isDropSuccess()) {
                 	controller.restoreWall();
                 }else {
@@ -193,7 +210,6 @@ public class TileButton extends ListenerButton{
 	public void update() {
 		this.setTextFill(Color.GREEN);
 		
-		
 		if(controller.isAccessible(x,y))
 			setAccessibleStyle();
 		else
@@ -204,11 +220,15 @@ public class TileButton extends ListenerButton{
 		else
 			this.setText("");
 		
-		if(controller.isShadowed(x, y))
-			if(controller.getTileType(x,y) > 0 || controller.getPlayerInTile(x, y) != Player.NOPLAYER)
+		if(controller.isShadowed(x, y)) {
+			if(controller.getTileType(x,y) > Tile.FLOOR || controller.getPlayerInTile(x, y) != Player.NOPLAYER)
 				this.setStyle("-fx-background-color: RED; -fx-border-color: Black; -fx-opacity:0.8");
 			else
-				this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black; -fx-opacity:0.9");
+				this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black; -fx-opacity:0.8");
+		}
+		
+		if(controller.isGameDone())
+			this.setDisable(true);
 		//this.setText(Integer.toString(x) + " " + Integer.toString(y));
 		
 	}

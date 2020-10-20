@@ -130,7 +130,19 @@ public class GameController implements Controller{
 		return model.isGameDone();
 	}
 	
+	public void hoverWallObject(int x, int y) {
+		model.hoverWallObject(x, y);
+	}
+	
 	public void notifyListeners() {
 		model.notifyListeners();
+	}
+
+	public void unhover() {
+		model.unhover();
+	}
+
+	public boolean isHovered(int x, int y) {
+		return model.isHovered(x, y);
 	}
 }
