@@ -9,6 +9,12 @@ public class GameModel {
 	private ArrayList<ArrayList<Tile>> laby;
 	private ArrayList<Tile> accessible;
 	private int turnPlayer = 0;
+	private ArrayList<Listener> listenerList;
+	
+	private boolean gameState = false;
+	
+	private final int sizeX;
+	private final int sizeY;
 	
 	//////////////
 	//// WALL ////
@@ -18,83 +24,44 @@ public class GameModel {
 	private ArrayList<Tile> wallVisited;
 	
 	
-	private ArrayList<Listener> listenerList;
+
 	private ArrayList<Tile> wallObjectBuffer;
 	
-	public GameModel() {
-		laby = Laby.getSquare();
+	public GameModel(String labyName) {
+		laby = Laby.getLaby(labyName);
+		sizeX = laby.size();
+		sizeY = laby.get(0).size();
+		
 		wallObjectBuffer = new ArrayList<Tile>();
 		wallObjectList = new ArrayList<ArrayList<Tile>>();
 		wallVisited = new ArrayList<Tile>();
-		generateWallObjectList();
-		
-		/*System.out.println("//////////////////////////\n"
-						+  "//// WALL OBJECT LIST ////\n"
-						+  "//////////////////////////\n");
-		for(ArrayList<Tile> wallObject : wallObjectList) {
-			System.out.print("[");
-			for(Tile tile : wallObject)
-				printTile(tile);
-			System.out.print("]\n");
-		}*/
-			
+		generateWallObjectList();		
 				
 		playerList = new ArrayList<Player>();
 		listenerList = new ArrayList<Listener>();
-		templatePlayers();
+		templatePlayers(4);
 		
 		generateAccessibles(playerList.get(turnPlayer));
 	}
 	
+	public int[] getLabSize() {
+		int[] size = {sizeX,sizeY};
+		return size;
+	}
 	private void printTile(Tile tile) {
 		System.out.print("(" + tile.x + ", " + tile.y + ")");
 	}
-	/**
-	 * Generates ArrayList of tiles of adjacent walls, useful for the drag n drop
-	 */
-	private void generateWallObjectList() {
-		ArrayList<Tile> wallObjectBuffer;
-		for(int i = 0; i < Laby.SIZE; i++) {
-			for(int j = 0; j < Laby.SIZE; j++) {
-				wallObjectBuffer = new ArrayList<Tile>();
-				generateWallObject(i, j, wallObjectBuffer);
-				if(wallObjectBuffer.size() != 0) {
-					wallObjectList.add(wallObjectBuffer);
-				}
-			}	
-		}
-	}
 	
-	private void generateWallObject(int i, int j, ArrayList<Tile> buffer) {
-		Tile currentTile = laby.get(i).get(j);
-		if( !wallVisited.contains(currentTile) 
-			&& currentTile.getType() == Tile.WALL 
-			&& buffer.size() != Laby.WALLOBJECTMAXSIZE) {
-			
-				buffer.add(currentTile);
-				wallVisited.add(currentTile);
-				
-				if(i + 1 < Laby.SIZE) {
-					generateWallObject(i + 1, j, buffer);
+	private void templatePlayers(int n) {
+		int playerNumber = 0;
+		for(int i = 0; i < sizeX; i++) {
+			for(int j = 0; j < sizeY; j++) {
+				if(laby.get(i).get(j).getType() == Tile.SPAWN) {
+					playerList.add(new Player("Player" + Integer.toString(playerNumber), i, j, playerNumber, (playerNumber + 1) % n));
+					laby.get(i).get(j).putPlayer(playerNumber);
+					playerNumber++;
 				}
-				if(j + 1 < Laby.SIZE) {
-					generateWallObject(i, j + 1, buffer);
-				}
-				if(i - 1 >= 0) {
-					generateWallObject(i - 1, j, buffer);
-				}	
-				if(j - 1 >= 0) {
-					generateWallObject(i, j - 1, buffer);
-				}
-				
-							
-		}
-	}
-	
-	private void templatePlayers() {
-		for(int i = 0; i < 2; i++) {
-			playerList.add(new Player("bruh" + Integer.toString(i),i,0));
-			laby.get(i).get(0).putPlayer(i);
+			}
 		}
 	};
 	
@@ -113,8 +80,7 @@ public class GameModel {
 		else
 			accessible = new ArrayList<Tile>();
 			
-		for(Listener l : listenerList)
-			l.update();
+		notifyListeners();
 	}
 	
 	public void movedWall() {
@@ -126,14 +92,13 @@ public class GameModel {
 		else
 			accessible = new ArrayList<Tile>();
 		
-		for(Listener listener : listenerList)
-			listener.update();
+		notifyListeners();
 	}
 	
 	private void generateAccessibles(Player p) {
 		accessible = new ArrayList<Tile>();
-		for(int x = 0; x < Laby.SIZE; x++) {
-			for(int y = 0; y < Laby.SIZE; y++) {
+		for(int x = 0; x < sizeX; x++) {
+			for(int y = 0; y < sizeY; y++) {
 				if(isLegalMove(p,x,y))
 					accessible.add(laby.get(x).get(y));
 			}
@@ -155,7 +120,7 @@ public class GameModel {
 		
 		int distance = Math.abs(fX - p.x) + Math.abs(fY - p.y);
 		
-		boolean type = laby.get(fX).get(fY).getType() == Tile.FLOOR;
+		boolean type = laby.get(fX).get(fY).getType() < Tile.WALL;
 		
 		if (type && distance > 0 
 				 && distance <= p.getMovement() 
@@ -187,7 +152,7 @@ public class GameModel {
 		listenerList.remove(listener);
 	}
 	
-	public int getPlayer(int x, int y) {
+	public int getPlayerInTile(int x, int y) {
 		return laby.get(x).get(y).getPlayerNumber();
 	}
 
@@ -199,8 +164,7 @@ public class GameModel {
 		playerList.get(turnPlayer).regainActions();
 		turnPlayer = (turnPlayer + 1) % playerList.size();
 		generateAccessibles(playerList.get(turnPlayer));
-		for(Listener l : listenerList)
-			l.update();
+		notifyListeners();
 	}
 	
 	public int getActionsLeft() {
@@ -211,10 +175,73 @@ public class GameModel {
 		return laby.get(x).get(y).getType();
 	}
 	
+	public void kill() {
+		Player killer = playerList.get(turnPlayer);		
+		Player dead = playerList.get(killer.target);
+
+		
+		dead.spendLife();
+
+		
+		if(dead.getLives() > 0) {
+			laby.get(killer.x).get(killer.y).removePlayer();
+			laby.get(dead.x).get(dead.y).removePlayer();
+			
+			dead.moveTo(dead.xSpawn, dead.ySpawn);
+			killer.moveTo(killer.xSpawn, killer.ySpawn);
+			
+			laby.get(dead.xSpawn).get(dead.ySpawn).putPlayer(killer.target);
+			laby.get(killer.xSpawn).get(killer.ySpawn).putPlayer(turnPlayer);
+		}else {
+			gameState = true;
+		}
+		
+		notifyListeners();
+	}
 	
 	///////////////////////////////////
 	//// WALL MANIPULATION METHODS ////
 	///////////////////////////////////
+	
+	/**
+	 * Generates ArrayList of tiles of adjacent walls, useful for the drag n drop
+	 */
+	private void generateWallObjectList() {
+		ArrayList<Tile> wallObjectBuffer;
+		for(int i = 0; i < sizeX; i++) {
+			for(int j = 0; j < sizeY; j++) {
+				wallObjectBuffer = new ArrayList<Tile>();
+				generateWallObject(i, j, wallObjectBuffer);
+				if(wallObjectBuffer.size() != 0) {
+					wallObjectList.add(wallObjectBuffer);
+				}
+			}	
+		}
+	}
+	
+	private void generateWallObject(int i, int j, ArrayList<Tile> buffer) {
+		Tile currentTile = laby.get(i).get(j);
+		if( !wallVisited.contains(currentTile) 
+			&& currentTile.getType() == Tile.WALL 
+			&& buffer.size() != Laby.WALLOBJECTMAXSIZE) {
+			
+				buffer.add(currentTile);
+				wallVisited.add(currentTile);
+				
+				if(i + 1 < sizeX) {
+					generateWallObject(i + 1, j, buffer);
+				}
+				if(j + 1 < sizeY) {
+					generateWallObject(i, j + 1, buffer);
+				}
+				if(i - 1 >= 0) {
+					generateWallObject(i - 1, j, buffer);
+				}	
+				if(j - 1 >= 0) {
+					generateWallObject(i, j - 1, buffer);
+				}			
+		}
+	}
 	
 	/**
 	 * Sets shadow of the wallObject for the drag and drop motion
@@ -231,20 +258,21 @@ public class GameModel {
 		
 		for(Tile tile : wallObjectBuffer){
 			
-			if(nX + (tile.x - oX) >= 0 && nX + (tile.x - oX) < Laby.SIZE 
-			&& nY + (tile.y - oY) >= 0 && nY + (tile.y - oY) < Laby.SIZE) {
+			if(nX + (tile.x - oX) >= 0 && nX + (tile.x - oX) < sizeX
+			&& nY + (tile.y - oY) >= 0 && nY + (tile.y - oY) < sizeY) {
 				Tile newWall = laby.get(nX + (tile.x - oX)).get(nY + (tile.y - oY));
 				newWall.setShadow(true);
-				if(newWall.getType() > 0 || newWall.getPlayerNumber() != -1)
+				
+				if(newWall.getType() != Tile.FLOOR || newWall.getPlayerNumber() != Player.NOPLAYER)
 					isDroppable = false;
+				
 			}else {
 				isDroppable = false;
 			}
 		}
 		
 		//System.out.println("OG Pos : " + oX + " " + oY);
-		for(Listener listener : listenerList)
-			listener.update();
+		notifyListeners();
 		return isDroppable;
 	}
 
@@ -257,8 +285,7 @@ public class GameModel {
 			for(Tile tile : line)
 				tile.setShadow(false);
 		}
-		for(Listener listener : listenerList)
-			listener.update();
+		notifyListeners();
 	}
 
 	public void removeWallObject(int x, int y) {
@@ -275,8 +302,7 @@ public class GameModel {
 				break;
 			}
 		}
-		for(Listener listener : listenerList)
-			listener.update();
+		notifyListeners();
 	}
 	
 	public void shadowToWall() {
@@ -289,9 +315,11 @@ public class GameModel {
 				}
 			}
 		}
-		wallObjectList.add(newWallObject);
 		
-		wallObjectBuffer = new ArrayList<Tile>();	
+		if(!wallObjectBuffer.containsAll(newWallObject)) {
+			wallObjectList.add(newWallObject);
+			wallObjectBuffer = new ArrayList<Tile>();
+		}
 	}
 
 	public void restoreWall() {
@@ -299,9 +327,48 @@ public class GameModel {
 			laby.get(tile.x).get(tile.y).setType(Tile.WALL);
 		
 		wallObjectList.add(wallObjectBuffer);
+		notifyListeners();
 	}
 
 	public boolean isDropSuccess() {
 		return wallObjectBuffer.size() == 0;
+	}
+
+	public Player getPlayer(int i) {
+		return playerList.get(i);
+	}
+
+	public String getTurnPlayerName() {
+		return playerList.get(turnPlayer).getName();
+	}
+	
+	public boolean isGameDone() {
+		return gameState;
+	}
+
+	public boolean isTargetNear() {
+		Player p = playerList.get(turnPlayer);
+		if(p.x + 1 < sizeX) {
+			if(laby.get(p.x + 1).get(p.y).getPlayerNumber() == p.target)
+				return true;
+		}
+		if(p.y + 1 < sizeY) {
+			if(laby.get(p.x).get(p.y + 1).getPlayerNumber() == p.target)
+				return true;
+		}
+		if(p.x - 1 >= 0) {
+			if(laby.get(p.x - 1).get(p.y).getPlayerNumber() == p.target)
+				return true;
+		}	
+		if(p.y - 1 >= 0) {
+			if(laby.get(p.x).get(p.y - 1).getPlayerNumber() == p.target)
+				return true;
+		}
+		return false;
+	}
+
+	public void notifyListeners() {
+		for(Listener listener : listenerList)
+			listener.update();
 	}
 }

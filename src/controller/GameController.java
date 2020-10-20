@@ -8,20 +8,17 @@ import view.TileButton;
 
 public class GameController implements Controller{
 	private GameModel model;
-	private ArrayList<TileButton> tiles;
 	
 	public GameController() {
-		tiles = new ArrayList<TileButton>();
 	}
 	
 	/**
 	 * Returns the player number whose turn it is
 	 * @return
 	 */
-	public int getTurnPlayer() {
-		return model.getTurnPlayer();
+	public String getTurnPlayerName() {
+		return model.getTurnPlayerName();
 	}
-	
 	/**
 	 * moves player number n to x y
 	 * @param n
@@ -36,14 +33,18 @@ public class GameController implements Controller{
 		model.addListener(listener);
 	}
 	
+	public void removeListener(Listener listener) {
+		model.removeListener(listener);
+	}
+	
 	/**
 	 * Returns the index of the player at x y, else -1
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	public int getPlayer(int x, int y) {
-		return model.getPlayer(x, y);
+	public int getPlayerInTile(int x, int y) {
+		return model.getPlayerInTile(x, y);
 	}
 	
 	public void addModel(GameModel model) {
@@ -64,6 +65,7 @@ public class GameController implements Controller{
 		model.nextTurn();
 	}
 	
+
 	/**
 	 * Gives the remaining actions of the turn player
 	 * @return
@@ -106,5 +108,29 @@ public class GameController implements Controller{
 	
 	public void movedWall() {
 		model.movedWall();
+	}
+	
+	/**
+	 * Returns true if the turnPlayer is right next to its target
+	 * @return
+	 */
+	public boolean isTargetNear() {
+		return model.isTargetNear();
+	}
+	
+	public void kill() {
+		model.kill();
+	}
+	
+	public int[] getLabSize() {
+		return model.getLabSize();
+	}
+
+	public boolean isGameDone() {
+		return model.isGameDone();
+	}
+	
+	public void notifyListeners() {
+		model.notifyListeners();
 	}
 }

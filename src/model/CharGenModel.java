@@ -25,7 +25,6 @@ public class CharGenModel {
 	public void addPlayers() {
 		for(int i = 0; i < nbPlayers; i ++) {
 			players.add(new PlayerGraphics(i+1));	
-			System.out.println(players.get(i).getPlayerNumber());
 		}
 	}
 	

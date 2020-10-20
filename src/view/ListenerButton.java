@@ -11,11 +11,13 @@ public abstract class ListenerButton extends Button implements Listener {
 	public ListenerButton(String label,Controller controller) {
 		super(label);
 		this.controller = controller;
+		controller.addListener(this);
 	}
 	
 	public ListenerButton(Controller controller) {
 		super();
 		this.controller = controller;
+		controller.addListener(this);
 	}
 	
 	@Override

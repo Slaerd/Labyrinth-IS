@@ -1,13 +1,11 @@
 package view;
 
-import java.util.ArrayList;
 
 import controller.GameController;
-import event.Listener;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
@@ -17,7 +15,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import model.Player;
 import model.Tile;
 
 public class TileButton extends ListenerButton{
@@ -54,14 +52,14 @@ public class TileButton extends ListenerButton{
 		});
 		
 		initDragNDrop();
-		
-		controller.addListener(this);
-		update();
 	}
 	
 	private void setCustomStyle(int tileType) {
 		switch(tileType) {
 			case Tile.FLOOR:
+				setFloorStyle();
+				break;
+			case Tile.SPAWN:
 				setFloorStyle();
 				break;
 			case Tile.WALL:
@@ -84,9 +82,8 @@ public class TileButton extends ListenerButton{
 		this.setOnMousePressed(e->{
 		});
 	}
-	
 	private void setVoidStyle() {
-		this.setStyle("-fx-background-color: #111111; -fx-border-color: Black");
+		this.setStyle("-fx-opacity: 0");
 		
 		this.setOnMouseEntered(e->{
 		});
@@ -96,8 +93,7 @@ public class TileButton extends ListenerButton{
 		
 		this.setOnMousePressed(e->{
 		});
-	}
-	
+	}	
 	private void setWallStyle() {
 		
 		this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
@@ -115,7 +111,6 @@ public class TileButton extends ListenerButton{
 		});
 		
 	}
-	
 	private void setAccessibleStyle() {
 		this.setStyle("-fx-background-color: #31BFFF; -fx-border-color: Black");
 		
@@ -131,12 +126,14 @@ public class TileButton extends ListenerButton{
 			this.setStyle("-fx-background-color: #ABE5FF; -fx-border-color: Black; -fx-border-width: 3");
 		});
 	}
-
 	private void initDragNDrop() {
 		////////////////
 		/// GRABBING ///
 		////////////////
-			
+		
+		this.setOnRotate(e->{
+			System.out.println("this workming ?");
+		});
 		this.setOnDragDetected(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
             	if(controller.getTileType(x, y) == Tile.WALL && controller.getActionsLeft() > 0) {
@@ -153,7 +150,7 @@ public class TileButton extends ListenerButton{
 		
 		this.setOnDragDone(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-            	TileButton.this.setCursor(Cursor.DEFAULT);
+            	//System.out.println("bruh");
                 if (!controller.isDropSuccess()) {
                 	controller.restoreWall();
                 }else {
@@ -174,20 +171,20 @@ public class TileButton extends ListenerButton{
                     if(controller.setWallObjectShadow(x,y,wallObjectOrigin))
                     	event.acceptTransferModes(TransferMode.MOVE);
             	}
-				TileButton.this.setCursor(Cursor.CLOSED_HAND);
             }
         });
         
         this.setOnDragExited(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-            	controller.unshadow();
+            	if (event.getDragboard().hasString()) {
+            		controller.unshadow();
+            	}
             }
         });
         
         this.setOnDragDropped(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-            	controller.shadowToWall();
-            	event.setDropCompleted(false);	
+            		controller.shadowToWall();
             }
         });
 
@@ -195,23 +192,24 @@ public class TileButton extends ListenerButton{
 	
 	public void update() {
 		this.setTextFill(Color.GREEN);
-		//this.setText(Integer.toString(x) + " " + Integer.toString(y));
+		
 		
 		if(controller.isAccessible(x,y))
 			setAccessibleStyle();
 		else
 			setCustomStyle(controller.getTileType(x, y));
 				
-		if(controller.getPlayer(x, y) != -1)
-			this.setText(Integer.toString(controller.getPlayer(x, y))); 
+		if(controller.getPlayerInTile(x, y) != Player.NOPLAYER)
+			this.setText(Integer.toString(controller.getPlayerInTile(x, y))); 
 		else
 			this.setText("");
 		
 		if(controller.isShadowed(x, y))
-			if(controller.getTileType(x,y) > 0 || controller.getPlayer(x, y) != -1)
+			if(controller.getTileType(x,y) > 0 || controller.getPlayerInTile(x, y) != Player.NOPLAYER)
 				this.setStyle("-fx-background-color: RED; -fx-border-color: Black; -fx-opacity:0.8");
 			else
 				this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black; -fx-opacity:0.9");
+		//this.setText(Integer.toString(x) + " " + Integer.toString(y));
 		
 	}
 }

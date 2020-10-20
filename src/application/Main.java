@@ -14,7 +14,7 @@ public class Main extends Application {
     	App app = new App(primaryStage);
     	
         primaryStage.setTitle("A-maze-ing");
-        primaryStage.setScene(app.gameScene);
+        primaryStage.setScene(app.mainMenuScene);
         primaryStage.show();
         
         //  
