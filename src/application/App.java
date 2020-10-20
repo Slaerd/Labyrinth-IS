@@ -2,7 +2,12 @@ package application;
 
 
 import controller.CharGenController;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -23,6 +28,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import model.*;
 
 import java.io.FileInputStream;
@@ -34,7 +40,7 @@ import view.ImageLib;
 import view.ListenerButton;
 import view.ListenerLabel;
 import view.TileButton;
-import model.CharGenModel;
+import view.TrapButton;
 
 public class App{
 	public static final int WINDOWX = 1280;
@@ -238,6 +244,7 @@ public class App{
 					this.setStyle("-fx-background-color: #FF0000; -fx-border-color: Black; -fx-text-fill: White");
 				else
 					this.setStyle("");
+				this.setDisable(gameController.isTrapActive());
 			}
 		};
 		
@@ -252,8 +259,10 @@ public class App{
 				if(gameController.getActionsLeft() == 0)
 					this.setStyle("-fx-background-color: #9CFF31; -fx-border-color: Black");
 				else
-					this.setStyle("");	
-				}
+					this.setStyle("");
+				
+				this.setDisable(gameController.isTrapActive());
+			}
 		};
 		
 		pass.setPrefSize(120, 80);
@@ -265,8 +274,10 @@ public class App{
 		Button backButton = new Button("Back");
 		
 		backButton.setOnMouseClicked(e->{
-			if(e.getButton().equals(MouseButton.PRIMARY))
+			if(e.getButton().equals(MouseButton.PRIMARY)) {
 				primaryStage.setScene(mainMenuScene);
+				primaryStage.centerOnScreen();
+			}
 		});
 		
 		int[] size = gameController.getLabSize();
@@ -292,6 +303,9 @@ public class App{
 		gameController.notifyListeners();
 	}
 	 
+	public void initTrapStage() {
+
+	}
 	
 	public void initCharGen() throws FileNotFoundException {
 		ImageLib lib = new ImageLib();

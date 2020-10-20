@@ -146,6 +146,41 @@ public class GameController implements Controller{
 		return model.isHovered(x, y);
 	}
 
+	public boolean getTrapTile(int x, int y) {
+		// TODO Auto-generated method stub
+		return model.getTrapTile(x, y);
+	}
+
+	public void setTrapTile(int x, int y, boolean b) {
+		model.setTrapTile(x, y, b);
+		
+	}
+
+	public boolean isTrapped(int x, int y) {
+		return model.isTrapped(x, y);
+	}
+
+	public void triggerTrap(int x, int y) {
+		model.triggerTrap(x, y, this);
+		
+	}
+
+	public boolean isTrapShapeClear() {
+		return model.isTrapShapeClear();
+	}
+
+	public void successTrap() {
+		model.successTrap();
+	}
+
+	public boolean isTrapActive() {
+		return model.isTrapActive();
+	}
+
+	public int getActionsLeft(int x, int y) {
+		return model.getActionsLeft(x, y);
+	}
+
 	/*public void rotate(int x, int y) {
 		model.rotateLeft(x, y);
 	}*/
