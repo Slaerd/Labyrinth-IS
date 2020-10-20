@@ -51,6 +51,11 @@ public class Tile {
 	public void removePlayer() {
 		playerNumber = -1;
 	}
+	
+	public int getSpecial() {
+		return specialEvent;
+	}
+	
 	public void removeSpecial() {
 		specialEvent = 0;
 	}

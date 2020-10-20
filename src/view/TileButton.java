@@ -114,13 +114,11 @@ public class TileButton extends ListenerButton{
 			if(controller.getActionsLeft() > 0) {
 				this.setCursor(Cursor.OPEN_HAND);
 				controller.hoverWallObject(x, y);
-				System.out.print("in : " + x + " " + y);
 			}
 		});
 		
 		this.setOnMouseExited(e->{
 			controller.unhover();
-			System.out.println("out");
 			this.setCursor(Cursor.DEFAULT);
 		});
 		
@@ -241,6 +239,11 @@ public class TileButton extends ListenerButton{
 		
 		if(controller.isGameDone())
 			this.setDisable(true);
+		
+		if(controller.isTrapped(x,y) && controller.getPlayerInTile(x, y) != Player.NOPLAYER) {
+			controller.triggerTrap(x,y);
+			System.out.println("aled");
+		}
 		//this.setText(Integer.toString(x) + " " + Integer.toString(y));
 		
 	}

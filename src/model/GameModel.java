@@ -2,7 +2,23 @@ package model;
 
 import java.util.ArrayList;
 
+import application.App;
+import controller.GameController;
 import event.Listener;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import view.TrapButton;
 
 public class GameModel {
 	private ArrayList<Player> playerList;
@@ -23,11 +39,16 @@ public class GameModel {
 	private ArrayList<ArrayList<Tile>> wallObjectList;
 	private ArrayList<Tile> wallVisited;
 	
-
 	private ArrayList<Tile> wallObjectBuffer;
 	
+	//////////////
+	//// TRAP ////
+	//////////////
+	
+	private ArrayList<ArrayList<Boolean>> trap;
+	
 	public GameModel(String labyName) {
-		laby = Laby.getLaby("test");
+		laby = Laby.getLaby(Laby.SQUARE);
 		sizeX = laby.size();
 		sizeY = laby.get(0).size();
 		
@@ -414,9 +435,64 @@ public class GameModel {
 		}
 		return false;
 	}
+	
+	public void triggerTrap(int x, int y, GameController controller) {
+		Stage trapStage = new Stage();
+		trapStage.setOnCloseRequest(e->{
+			e.consume();
+		});
+		
+		trap = Laby.getTrap();
+		VBox root = new VBox();
+		Label warning = new Label("Draw the shape to escape the trap !");
+		GridPane trapShape = new GridPane();
+		TrapButton buttonBuffer;
+		for(int i = 0; i < trap.size(); i++) {
+			for(int j = 0; j < trap.get(i).size(); j++) {
+				buttonBuffer = new TrapButton(i,j,controller);
+				trapShape.add(buttonBuffer, i, j);
+			}
+		}
+		
+		Label timerLabel = new Label();
+		int timerStart = 7;
+		IntegerProperty seconds = new SimpleIntegerProperty(timerStart);
+		Timeline timeline;
+		
+        timerLabel.textProperty().bind(seconds.asString());
 
+        /*if (timeline != null) {
+            timeline.stop();
+        }*/
+        seconds.set(timerStart);
+        timeline = new Timeline();
+        timeline.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(timerStart+1),
+                new KeyValue(seconds, 0)));
+        timeline.playFromStart();
+        
+        root.getChildren().addAll(warning,trapShape,timerLabel);
+        root.setAlignment(Pos.CENTER);
+        trapStage.setScene(new Scene(root,App.WINDOWX/2,App.WINDOWY/2));
+		trapStage.show();
+		laby.get(x).get(y).removeSpecial();
+	}
 	public void notifyListeners() {
 		for(Listener listener : listenerList)
 			listener.update();
+	}
+
+	public boolean getTrapTile(int x, int y) {
+		// TODO Auto-generated method stub
+		return trap.get(x).get(y);
+	}
+
+	public void setTrapTile(int x, int y, boolean b) {
+		trap.get(x).set(y,b);
+	}
+
+	public boolean isTrapped(int x, int y) {
+		// TODO Auto-generated method stub
+		return laby.get(x).get(y).getSpecial() == Tile.TRAP;
 	}
 }

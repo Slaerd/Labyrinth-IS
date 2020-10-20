@@ -8,7 +8,13 @@ public class Laby {
 	public static final String SQUARE = "square";
 	public static final String RECTANGLE = "rectangle";
 	public static final String CROSS = "cross";
-	private static final int[][] SQU = {		{1,0,0,0,0,0,0,0,0,1},
+	
+	private static final boolean[][] TRAP = {	{false,false,false,false},
+												{false,true ,true ,false},
+												{false,true ,true ,false},
+												{false,false,false,false}};
+	
+	private static final int[][] SQU = {		{1,0,0,4,0,0,0,0,0,1},
 												{0,2,2,0,2,2,0,2,2,0},
 												{0,2,2,0,2,2,0,2,2,0},
 												{0,0,0,0,0,0,0,0,0,0},
@@ -68,7 +74,10 @@ public class Laby {
 					columnBuffer = new ArrayList<Tile>();
 					
 					for(int i = 0; i < SQU.length; i++) {
-						tileBuffer = new Tile(SQU[i][j],j,i);
+						if(SQU[i][j] == 4)
+							tileBuffer = new Tile(0,j,i,Tile.TRAP);
+						else
+							tileBuffer = new Tile(SQU[i][j],j,i);
 						columnBuffer.add(tileBuffer);
 					}
 					
@@ -118,5 +127,23 @@ public class Laby {
 				return laby;
 		}
 		return null;
+	}
+	
+	public static ArrayList<ArrayList<Boolean>> getTrap(){
+		
+		ArrayList<ArrayList<Boolean>> trap = new ArrayList<ArrayList<Boolean>>();
+		ArrayList<Boolean> columnBuffer;
+		
+		for(int j = 0; j < TRAP[0].length; j++) {			
+
+			columnBuffer = new ArrayList<Boolean>();
+			
+			for(int i = 0; i < TRAP.length; i++) {
+				columnBuffer.add(TRAP[i][j]);
+			}
+			
+			trap.add(columnBuffer);
+		}
+		return trap;
 	}
 }
