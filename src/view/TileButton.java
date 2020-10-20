@@ -71,7 +71,7 @@ public class TileButton extends ListenerButton{
 				setFloorStyle();
 				break;
 			case Tile.SPAWN:
-				setFloorStyle();
+				setSpawnStyle();
 				break;
 			case Tile.WALL:
 				setWallStyle();
@@ -83,6 +83,18 @@ public class TileButton extends ListenerButton{
 	}
 	private void setFloorStyle() {
 		this.setStyle("-fx-background-color: #dddddd; -fx-border-color: Black");
+		
+		this.setOnMouseEntered(e->{
+		});
+		
+		this.setOnMouseExited(e->{
+		});
+		
+		this.setOnMousePressed(e->{
+		});
+	}
+	private void setSpawnStyle() {
+		this.setStyle("-fx-background-color: #ffffff; -fx-border-color: Black");
 		
 		this.setOnMouseEntered(e->{
 		});
@@ -218,6 +230,7 @@ public class TileButton extends ListenerButton{
 	}
 	
 	public void update() {
+		
 		this.setTextFill(Color.GREEN);
 		
 		if(controller.isAccessible(x,y))
@@ -225,10 +238,16 @@ public class TileButton extends ListenerButton{
 		else
 			setCustomStyle(controller.getTileType(x, y));
 				
-		if(controller.getPlayerInTile(x, y) != Player.NOPLAYER)
+		if(controller.getPlayerInTile(x, y) != Player.NOPLAYER) {
+			if(controller.getActionsLeft(x,y) == 0)
+				this.setTextFill(Color.RED);
 			this.setText(Integer.toString(controller.getPlayerInTile(x, y))); 
-		else
+		}else {
 			this.setText("");
+			this.setTextFill(Color.GREEN);
+		}
+		
+
 		
 		if(controller.isShadowed(x, y)) {
 			if(controller.getTileType(x,y) > Tile.FLOOR || controller.getPlayerInTile(x, y) != Player.NOPLAYER)
@@ -237,13 +256,16 @@ public class TileButton extends ListenerButton{
 				this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black; -fx-opacity:0.8");
 		}
 		
-		if(controller.isGameDone())
-			this.setDisable(true);
-		
 		if(controller.isTrapped(x,y) && controller.getPlayerInTile(x, y) != Player.NOPLAYER) {
 			controller.triggerTrap(x,y);
 			System.out.println("aled");
 		}
+		
+		this.setDisable(controller.isTrapActive());
+
+		if(controller.isGameDone())
+			this.setDisable(true);
+		
 		//this.setText(Integer.toString(x) + " " + Integer.toString(y));
 		
 	}

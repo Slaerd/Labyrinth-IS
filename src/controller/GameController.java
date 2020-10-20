@@ -157,7 +157,6 @@ public class GameController implements Controller{
 	}
 
 	public boolean isTrapped(int x, int y) {
-		// TODO Auto-generated method stub
 		return model.isTrapped(x, y);
 	}
 
@@ -167,13 +166,19 @@ public class GameController implements Controller{
 	}
 
 	public boolean isTrapShapeClear() {
-		// TODO Auto-generated method stub
 		return model.isTrapShapeClear();
 	}
 
 	public void successTrap() {
 		model.successTrap();
-		
+	}
+
+	public boolean isTrapActive() {
+		return model.isTrapActive();
+	}
+
+	public int getActionsLeft(int x, int y) {
+		return model.getActionsLeft(x, y);
 	}
 
 	/*public void rotate(int x, int y) {

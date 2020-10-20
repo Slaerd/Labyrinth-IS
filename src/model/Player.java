@@ -1,8 +1,8 @@
 package model;
 
 public class Player {
-	public static final int MOVEMENT = 3;
-	public static final int ACTION = 999;
+	public static final int MOVEMENT = 2;
+	public static final int ACTION = 2;
 	public static final int NOPLAYER = -1;
 	
 	private String name;
@@ -16,6 +16,7 @@ public class Player {
 	private int action = ACTION;
 	private int bonusAction = 0;
 	private int bonusMovement = 0;
+	private boolean trapped = false;
 	
 	public Player(String name, int x, int y, int number, int target) {
 		this.name = name;
@@ -82,6 +83,15 @@ public class Player {
 		return p.name == this.name;
 	}
 
+	public boolean isTrapped() {
+		// TODO Auto-generated method stub
+		return trapped ;
+	}
+
+	public void setTrapped(boolean b) {
+		// TODO Auto-generated method stub
+		trapped = b;
+	}
 
 }
 

@@ -17,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import view.TrapButton;
 
@@ -45,12 +46,12 @@ public class GameModel {
 	//// TRAP ////
 	//////////////
 	
-	private ArrayList<ArrayList<Boolean>> trap;
+	private ArrayList<ArrayList<Boolean>> trap = new ArrayList<ArrayList<Boolean>>();
 	private Stage trapStage;
 	private Timeline timeline;
 	
 	public GameModel(String labyName) {
-		laby = Laby.getLaby(Laby.SQUARE);
+		laby = Laby.getLaby(labyName);
 		sizeX = laby.size();
 		sizeY = laby.get(0).size();
 		
@@ -183,9 +184,15 @@ public class GameModel {
 	}
 	
 	public void nextTurn() {
-		playerList.get(turnPlayer).regainActions();
+		Player p = playerList.get(turnPlayer);
+		if(!p.isTrapped())
+			p.regainActions();
+		p.setTrapped(false);
 		turnPlayer = (turnPlayer + 1) % playerList.size();
-		generateAccessibles(playerList.get(turnPlayer));
+		if(playerList.get(turnPlayer).getActions() > 0)
+			generateAccessibles(playerList.get(turnPlayer));
+		else
+			accessible = new ArrayList<Tile>();
 		notifyListeners();
 	}
 	
@@ -440,17 +447,20 @@ public class GameModel {
 	
 	public void triggerTrap(int x, int y, GameController controller) {
 		trapStage = new Stage();
+		trapStage.initStyle(StageStyle.UNDECORATED);
 		trapStage.setOnCloseRequest(e->{
 			e.consume();
 		});
 		
-
+		trapStage.setOnHiding(e->{
+			e.consume();
+		});
 		trapStage.setAlwaysOnTop(true);
 		
 		trap = Laby.getTrap();
 		VBox root = new VBox();
-		Label warning = new Label("Draw the shape to escape the trap !");
-		warning.setStyle("-fx-font-size: 30");
+		Label trapWarning = new Label("Draw the shape to escape the trap !");
+		trapWarning.setStyle("-fx-font-size: 30");
 		GridPane trapGrid = new GridPane();
 		TrapButton buttonBuffer;
 		for(int i = 0; i < trap.size(); i++) {
@@ -474,17 +484,25 @@ public class GameModel {
                 new KeyValue(seconds, 0)));
         timeline.playFromStart();
         timeline.setOnFinished(e->{
-        	
+			playerList.get(turnPlayer).setTrapped(true);
         	trapStage.close();
+        	trap = new ArrayList<ArrayList<Boolean>>();
+        	notifyListeners();
         });
 		
-        root.getChildren().addAll(warning,trapGrid,timerLabel);
+
+        root.getChildren().addAll(trapWarning,trapGrid,timerLabel);
+        
+        trapGrid.setAlignment(Pos.CENTER);
         root.setAlignment(Pos.CENTER);
+        root.setSpacing(20);
         trapStage.setScene(new Scene(root,App.WINDOWX/2,App.WINDOWY/2));
 
 		trapStage.show();
 		
 		laby.get(x).get(y).removeSpecial();
+		
+		notifyListeners();
 	}
 	
 	public boolean isTrapShapeClear() {
@@ -512,12 +530,22 @@ public class GameModel {
 	}
 
 	public boolean isTrapped(int x, int y) {
-		// TODO Auto-generated method stub
 		return laby.get(x).get(y).getSpecial() == Tile.TRAP;
 	}
 
 	public void successTrap() {
 		timeline.stop();
 		trapStage.close();
+		trap = new ArrayList<ArrayList<Boolean>>();
+		notifyListeners();
+	}
+
+	public boolean isTrapActive() {
+		return trap.size() != 0;
+	}
+
+	public int getActionsLeft(int x, int y) {
+		// TODO Auto-generated method stub
+		return playerList.get(laby.get(x).get(y).getPlayerNumber()).getActions();
 	}
 }

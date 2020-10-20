@@ -250,6 +250,7 @@ public class App{
 					this.setStyle("-fx-background-color: #FF0000; -fx-border-color: Black; -fx-text-fill: White");
 				else
 					this.setStyle("");
+				this.setDisable(gameController.isTrapActive());
 			}
 		};
 		
@@ -264,8 +265,10 @@ public class App{
 				if(gameController.getActionsLeft() == 0)
 					this.setStyle("-fx-background-color: #9CFF31; -fx-border-color: Black");
 				else
-					this.setStyle("");	
-				}
+					this.setStyle("");
+				
+				this.setDisable(gameController.isTrapActive());
+			}
 		};
 		
 		pass.setPrefSize(120, 80);
@@ -277,8 +280,10 @@ public class App{
 		Button backButton = new Button("Back");
 		
 		backButton.setOnMouseClicked(e->{
-			if(e.getButton().equals(MouseButton.PRIMARY))
+			if(e.getButton().equals(MouseButton.PRIMARY)) {
 				primaryStage.setScene(mainMenuScene);
+				primaryStage.centerOnScreen();
+			}
 		});
 		
 		int[] size = gameController.getLabSize();
