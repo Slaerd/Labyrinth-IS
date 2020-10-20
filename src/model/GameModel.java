@@ -23,7 +23,6 @@ public class GameModel {
 	private ArrayList<ArrayList<Tile>> wallObjectList;
 	private ArrayList<Tile> wallVisited;
 	
-	
 
 	private ArrayList<Tile> wallObjectBuffer;
 	

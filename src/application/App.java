@@ -25,9 +25,11 @@ import javafx.stage.Stage;
 import model.*;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import controller.*;
+import view.ImageLib;
 import view.ListenerButton;
 import view.ListenerLabel;
 import view.TileButton;
@@ -88,27 +90,15 @@ public class App{
 	
 	private ColorPicker colorPicker = new ColorPicker();
 	
-	private Image head1 = new Image("file: images/head1.jpg");
-	private ImageView head1IV = new ImageView(head1);
-	private Image head2 = new Image("file: images.head2.jpg");
-	private ImageView head2IV = new ImageView(head2);
 	private StackPane headImages = new StackPane();
 	
-	private Image body1 = new Image("file: images/body1.jpg");
-	private ImageView body1IV = new ImageView(body1);
-	private Image body2 = new Image("file: images.body2.jpg");
-	private ImageView body2IV = new ImageView(body2);
 	private StackPane bodyImages = new StackPane();
 	
-	private Image legs1 = new Image("file: images/legs1.jpg");
-	private ImageView legs1IV = new ImageView(legs1);
-	private Image legs2 = new Image("file: images.legs2.jpg");
-	private ImageView legs2IV = new ImageView(legs2);
 	private StackPane legsImages = new StackPane();
 	//Game stuff
 	private GameController gameController;
 	
-	public App(Stage stage) {
+	public App(Stage stage) throws FileNotFoundException {
 		
 		this.primaryStage = stage;
 		initMainMenu();
@@ -309,9 +299,16 @@ public class App{
 	}
 	 
 	
-	public void initCharGen() {
-
+	public void initCharGen() throws FileNotFoundException {
+		ImageLib lib = new ImageLib();
 		myCharGenController.addPlayers();
+		
+		ImageView head1IV = new ImageView(lib.head1);
+		ImageView head2IV = new ImageView(lib.head2);
+		ImageView body1IV = new ImageView(lib.body1);
+		ImageView body2IV = new ImageView(lib.body2);
+		ImageView legs1IV = new ImageView(lib.legs1);
+		ImageView legs2IV = new ImageView(lib.legs2);
 		
 		head1IV.setId("1");
 		head2IV.setId("2");
