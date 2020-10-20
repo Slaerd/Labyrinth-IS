@@ -39,7 +39,7 @@ import model.CharGenModel;
 public class App{
 	public static final int WINDOWX = 1280;
 	public static final int WINDOWY = 760;
-	public static final Color beginningCharacterColor = new Color("#e8ede9");
+	public static final Color beginningCharacterColor = Color.web("#e8ede9");
 	
 	private Stage primaryStage;
 	private CharGenController myCharGenController = new CharGenController();
