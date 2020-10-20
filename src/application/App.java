@@ -39,12 +39,12 @@ import model.CharGenModel;
 public class App{
 	public static final int WINDOWX = 1280;
 	public static final int WINDOWY = 760;
-	public static final Color beginningCharacterColor = Color.web("#e8ede9");
+	public static final Color beginningCharacterColor = Color.rgb(232, 237, 233);
 	
 	private Stage primaryStage;
 	private CharGenController myCharGenController = new CharGenController();
 	
-	
+	private String RGBOfBeginningCharacterColor = "rgb("+beginningCharacterColor.getRed()*255 +","+beginningCharacterColor.getGreen()*255+","+beginningCharacterColor.getBlue()*255+");";
 	
 	//Scene List
 
@@ -309,6 +309,15 @@ public class App{
 		VBox rightArrows = new VBox();
 		VBox colorPickers = new VBox();
 		
+		
+		StackPane character = new StackPane();
+		
+		Pane paneOverImages = new Pane(); 
+		
+		paneOverImages.setStyle("-fx-backgrond-color : #42e5eb");
+		paneOverImages.setOpacity(1);
+		characterDisplay.setOpacity(0.1);
+		
 		ImageView head1IV = new ImageView(lib.head1);
 		ImageView head2IV = new ImageView(lib.head2);
 		ImageView body1IV = new ImageView(lib.body1);
@@ -320,30 +329,50 @@ public class App{
 		head2IV.setId("2");
 		head1IV.setDisable(true);
 		head2IV.setDisable(true);
+		head1IV.setFitHeight(100);
+		head1IV.setFitWidth(100);
+		head2IV.setFitHeight(100);
+		head2IV.setFitWidth(100);
 		
 		body1IV.setId("1");
 		body2IV.setId("2");
 		body1IV.setDisable(true);
 		body2IV.setDisable(true);
+		body1IV.setFitHeight(100);
+		body1IV.setFitWidth(100);
+		body2IV.setFitHeight(100);
+		body2IV.setFitWidth(100);
 		
 		legs1IV.setId("1");
 		legs2IV.setId("2");
 		legs1IV.setDisable(true);
 		legs2IV.setDisable(true);
-
+		legs1IV.setFitHeight(100);
+		legs1IV.setFitWidth(100);
+		legs2IV.setFitHeight(100);
+		legs2IV.setFitWidth(100);
+		
+		//setting the default color on the character images
+		System.out.println(beginningCharacterColor);
+		imgHead.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+		imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+		imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+		
 		headImages.getChildren().addAll(head1IV, head2IV);
 		bodyImages.getChildren().addAll(body1IV, body2IV);
 		legsImages.getChildren().addAll(legs1IV, legs2IV);
 		
 		colorPickers.getChildren().addAll(colorPicker, applyColor);
-		characterImages.getChildren().addAll(imgHead, imgBody, imgLegs);
+		characterImages.getChildren().addAll(headImages,bodyImages,legsImages);
 		leftArrows.getChildren().addAll(leftArrowHead, leftArrowBody, leftArrowLegs);
 		rightArrows.getChildren().addAll(rightArrowHead, rightArrowBody, rightArrowLegs);
 		characterDisplay.getChildren().addAll(leftArrows, characterImages, rightArrows);
 		playerNumberVBox.getChildren().addAll(playerNumber, playerNumberL);
 		colorPlusPlayer.getChildren().addAll(colorPickers, playerNumberVBox);
 		pickersPlusDone.getChildren().addAll(colorPlusPlayer, doneButton);
-		charGenRoot.getChildren().addAll(characterDisplay, pickersPlusDone);
+		//character.getChildren().addAll( characterDisplay, paneOverImages);
+		character.getChildren().addAll( paneOverImages, characterDisplay);
+		charGenRoot.getChildren().addAll(character, pickersPlusDone);
 		
 		charGenScene = new Scene(charGenRoot);
 		
@@ -387,19 +416,23 @@ public class App{
 			}else if(playerNumber.getText().equals("2")) {
 				  myCharGenController.setCurrentColor(myCharGenController.getPlayers().get(1), colorPicker.getValue());
 				  System.out.println(myCharGenController.getPlayers().get(1).getCurrentColor());
-				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(1).getCurrentColor().getRed()*255
-						  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getGreen()*255
-						  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getBlue()*255
-						  +");"
-						  );
+				  for(Node node : characterImages.getChildren()) {
+					  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(1).getCurrentColor().getRed()*255
+							  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getGreen()*255
+							  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getBlue()*255
+							  +");"
+							  );
+					  }
 			  }else if(playerNumber.getText().equals("3")) {
 				  myCharGenController.setCurrentColor(myCharGenController.getPlayers().get(2), colorPicker.getValue());
 				  System.out.println(myCharGenController.getPlayers().get(2).getCurrentColor());
-				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(2).getCurrentColor().getRed()*255
-						  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getGreen()*255
-						  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getBlue()*255
-						  +");"
-						  );
+				  for(Node node : characterImages.getChildren()) {
+					  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(2).getCurrentColor().getRed()*255
+							  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getGreen()*255
+							  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getBlue()*255
+							  +");"
+							  );
+					  }
 			  }
 		});
 		
@@ -415,12 +448,18 @@ public class App{
 			  if(playerNumber.getText().equals("1")) { 
 				  playerNumber.setText("2");
 				  colorPicker.setValue(myCharGenController.getPlayers().get(1).getCurrentColor());
-				  if(myCharGenController.getPlayers().get(1).getCurrentColor() != null) {
-				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(1).getCurrentColor().getRed()*255
-						  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getGreen()*255
-						  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getBlue()*255
-						  +");"
-						  );
+				  if(myCharGenController.getPlayers().get(1).getCurrentColor() == null) {
+					  imgHead.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+					  imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+					  imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+				  }else {
+					  for(Node node : characterImages.getChildren()) {
+						  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(1).getCurrentColor().getRed()*255
+								  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getGreen()*255
+								  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getBlue()*255
+								  +");"
+								  );
+					  }
 				  }
 				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead()));
 				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentBody()));
@@ -428,22 +467,38 @@ public class App{
 			  }else if(playerNumber.getText().equals("2")) {
 				  playerNumber.setText("3");
 				  colorPicker.setValue(myCharGenController.getPlayers().get(2).getCurrentColor());
-				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(2).getCurrentColor().getRed()*255
-						  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getGreen()*255
-						  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getBlue()*255
-						  +");"
-						  );
+				  if(myCharGenController.getPlayers().get(2).getCurrentColor() == null) {
+					  imgHead.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+					  imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+					  imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+				  }else {
+					  for(Node node : characterImages.getChildren()) {
+						  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(2).getCurrentColor().getRed()*255
+								  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getGreen()*255
+								  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getBlue()*255
+								  +");"
+								  );
+					  }
+				  }
 				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentHead())); 
 				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentBody()));
 				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentLegs()));
 			  }else if(playerNumber.getText().equals("3")) {
 				  playerNumber.setText("1");
 				  colorPicker.setValue(myCharGenController.getPlayers().get(0).getCurrentColor());
-				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(0).getCurrentColor().getRed()*255
-						  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getGreen()*255
-						  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getBlue()*255
-						  +");"
-						  );
+				  if(myCharGenController.getPlayers().get(2).getCurrentColor() == null) {
+					  imgHead.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+					  imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+					  imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+				  }else {
+					  for(Node node : characterImages.getChildren()) {
+						  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(0).getCurrentColor().getRed()*255
+								  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getGreen()*255
+								  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getBlue()*255
+								  +");"
+								  );
+					  }
+				  }
 				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentHead()));
 				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentBody()));
 				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentLegs()));
