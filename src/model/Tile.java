@@ -25,8 +25,10 @@ public class Tile {
 		this.y = y;
 	}
 	
-	public Tile(int type, int special) {
+	public Tile(int type, int x, int y, int special) {
 		tileType = type;
+		this.x = x;
+		this.y = y;
 		specialEvent = special;
 	}
 	

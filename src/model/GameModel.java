@@ -28,7 +28,7 @@ public class GameModel {
 	private ArrayList<Tile> wallObjectBuffer;
 	
 	public GameModel(String labyName) {
-		laby = Laby.getLaby(labyName);
+		laby = Laby.getLaby("test");
 		sizeX = laby.size();
 		sizeY = laby.get(0).size();
 		
@@ -109,7 +109,7 @@ public class GameModel {
 		return accessible;
 	}
 	/**
-	 * DOES NOT CHECK DISTANCE PLEASE DO IT IN THE MOVE FUNCTION
+	 * 
 	 * @param p
 	 * @param fX
 	 * @param fY
@@ -288,6 +288,32 @@ public class GameModel {
 		notifyListeners();
 		return isDroppable;
 	}
+	
+	/*public void rotateLeft(int x, int y) {
+		ArrayList<Tile> myWallObject = new ArrayList<Tile>();
+		for(ArrayList<Tile> wallObject : wallObjectList) {
+			if(wallObject.contains(laby.get(x).get(y))) {
+				myWallObject = wallObject;
+				break;
+			}
+		}
+		
+		int height = 0;
+		
+		for(Tile a : myWallObject){
+			for(Tile b : myWallObject){
+				height = Math.max( Math.abs(a.y - b.y), height );
+			}
+		}
+		
+		for(int i = 0; i < myWallObject.size(); i++){
+			Tile tile = myWallObject.get(i);
+			tile.setType(Tile.FLOOR);
+			laby.get(height - tile.y - 1).get(tile.x).setType(Tile.WALL);
+		}
+		
+		notifyListeners();
+	}*/
 	
 	public boolean isHovered(int x, int y) {
 		return laby.get(x).get(y).isHovered();

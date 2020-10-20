@@ -11,6 +11,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -50,6 +51,16 @@ public class TileButton extends ListenerButton{
 
 			}
 		});
+		
+		/*this.setOnKeyPressed(e->{
+			if(e.getCode().equals(KeyCode.F)) {
+				if(controller.isHovered(x, y)) {
+					controller.rotate(x,y);
+					System.out.println("sus");
+				}
+				e.consume();
+			}	
+		});*/
 		
 		initDragNDrop();
 	}
@@ -114,10 +125,12 @@ public class TileButton extends ListenerButton{
 		});
 		
 		this.setOnMousePressed(e->{
+			this.setStyle("-fx-background-color: #7f7f7f; -fx-border-color: Blue");
 			this.setCursor(Cursor.CLOSED_HAND);
 		});
 		
 		this.setOnMouseReleased(e->{
+			//this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
 			this.setCursor(Cursor.DEFAULT);
 		});
 		
@@ -167,7 +180,6 @@ public class TileButton extends ListenerButton{
 		this.setOnDragDone(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
             	//System.out.println("bruh");
-        		event.consume();
                 if (!controller.isDropSuccess()) {
                 	controller.restoreWall();
                 }else {

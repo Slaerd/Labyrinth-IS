@@ -145,4 +145,8 @@ public class GameController implements Controller{
 	public boolean isHovered(int x, int y) {
 		return model.isHovered(x, y);
 	}
+
+	/*public void rotate(int x, int y) {
+		model.rotateLeft(x, y);
+	}*/
 }
