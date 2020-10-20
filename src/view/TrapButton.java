@@ -12,7 +12,7 @@ public class TrapButton extends Button{
 	public TrapButton(int x, int y, GameController gameController) {
 		super();
 		this.controller = gameController;
-		this.setPrefSize(30, 30);
+		this.setPrefSize(40, 40);
 		if(controller.getTrapTile(x, y))
 			this.setStyle("-fx-opacity: 0");
 		else
@@ -24,7 +24,7 @@ public class TrapButton extends Button{
 			controller.setTrapTile(x, y, true);
 			
 			if(controller.isTrapShapeClear())
-				controller.closeTrapWindow();
+				controller.successTrap();
 		});
 	}
 	

@@ -171,8 +171,8 @@ public class GameController implements Controller{
 		return model.isTrapShapeClear();
 	}
 
-	public void closeTrapWindow() {
-		model.closeTrapWindow();
+	public void successTrap() {
+		model.successTrap();
 		
 	}
 

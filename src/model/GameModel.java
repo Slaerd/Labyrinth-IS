@@ -47,6 +47,7 @@ public class GameModel {
 	
 	private ArrayList<ArrayList<Boolean>> trap;
 	private Stage trapStage;
+	private Timeline timeline;
 	
 	public GameModel(String labyName) {
 		laby = Laby.getLaby(Laby.SQUARE);
@@ -449,33 +450,35 @@ public class GameModel {
 		trap = Laby.getTrap();
 		VBox root = new VBox();
 		Label warning = new Label("Draw the shape to escape the trap !");
-		GridPane trapShape = new GridPane();
+		warning.setStyle("-fx-font-size: 30");
+		GridPane trapGrid = new GridPane();
 		TrapButton buttonBuffer;
 		for(int i = 0; i < trap.size(); i++) {
 			for(int j = 0; j < trap.get(i).size(); j++) {
 				buttonBuffer = new TrapButton(i,j,controller);
-				trapShape.add(buttonBuffer, i, j);
+				trapGrid.add(buttonBuffer, i, j);
 			}
 		}
 		
 		Label timerLabel = new Label();
-		int timerStart = 7;
+		int timerStart = 5;
 		IntegerProperty seconds = new SimpleIntegerProperty(timerStart);
-		Timeline timeline;
+
 		
         timerLabel.textProperty().bind(seconds.asString());
 
-        /*if (timeline != null) {
-            timeline.stop();
-        }*/
         seconds.set(timerStart);
         timeline = new Timeline();
         timeline.getKeyFrames().add(
                 new KeyFrame(Duration.seconds(timerStart+1),
                 new KeyValue(seconds, 0)));
         timeline.playFromStart();
+        timeline.setOnFinished(e->{
+        	
+        	trapStage.close();
+        });
 		
-        root.getChildren().addAll(warning,trapShape,timerLabel);
+        root.getChildren().addAll(warning,trapGrid,timerLabel);
         root.setAlignment(Pos.CENTER);
         trapStage.setScene(new Scene(root,App.WINDOWX/2,App.WINDOWY/2));
 
@@ -513,7 +516,8 @@ public class GameModel {
 		return laby.get(x).get(y).getSpecial() == Tile.TRAP;
 	}
 
-	public void closeTrapWindow() {
+	public void successTrap() {
+		timeline.stop();
 		trapStage.close();
 	}
 }
