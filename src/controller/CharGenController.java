@@ -2,11 +2,15 @@ package controller;
 
 import model.CharGenModel;
 import model.PlayerGraphics;
+
+import java.util.ArrayList;
+
 import controller.Controller;
+import javafx.scene.paint.Color;
 
 public class CharGenController{
 
-	public CharGenModel myModel = new CharGenModel();
+	private CharGenModel myModel = new CharGenModel();
 	
 	/*
 	 * public void changePlayerNumber() {
@@ -53,4 +57,21 @@ public class CharGenController{
 	public int getCurrentLegs(PlayerGraphics pg) {
 		return myModel.getCurrentLegs(pg);
 	}
+	
+	public Color getCurrentColor(PlayerGraphics pg) {
+		return myModel.getCurrentColor(pg);
+	}
+	
+	public void setCurrentColor(PlayerGraphics pg, Color newColor) {
+		myModel.setCurrentColor(pg, newColor);
+	}
+	
+	public ArrayList<PlayerGraphics> getPlayers(){
+		return myModel.getPlayers();
+	}
+	
+	public int getCurrentPlayer() {
+		return myModel.getCurrentPlayer();
+	}
+	
 }

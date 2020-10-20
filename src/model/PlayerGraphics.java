@@ -1,5 +1,7 @@
 package model;
 
+import javafx.scene.paint.Color;
+
 public class PlayerGraphics {
 	
 	int playerNumber;
@@ -7,6 +9,9 @@ public class PlayerGraphics {
 	public int currentHead;
 	public int currentBody;
 	public int currentLegs;
+	
+	public Color currentColor;
+	
 	
 	public PlayerGraphics(int playerNumber) {
 		this.playerNumber = playerNumber;
@@ -29,5 +34,9 @@ public class PlayerGraphics {
 	
 	public int getCurrentLegs() {
 		return this.currentLegs;
+	}
+	
+	public Color getCurrentColor() {
+		return this.currentColor;
 	}
 }

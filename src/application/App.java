@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import model.*;
 
@@ -38,6 +39,7 @@ import model.CharGenModel;
 public class App{
 	public static final int WINDOWX = 1280;
 	public static final int WINDOWY = 760;
+	public static final Color beginningCharacterColor = new Color("#e8ede9");
 	
 	private Stage primaryStage;
 	private CharGenController myCharGenController = new CharGenController();
@@ -73,20 +75,11 @@ public class App{
 	private Button leftArrowLegs = new Button("<");
 	//to switch between character customization
 	private Label playerNumberL = new Label("Player #");
-	private Button playerNumber = new Button(Integer.toString(myCharGenController.myModel.getCurrentPlayer()));
+	private Button playerNumber = new Button(Integer.toString(myCharGenController.getCurrentPlayer()));
 	//the image between the two arrows
 	private ToggleButton imgHead = new ToggleButton("1");
 	private ToggleButton imgBody = new ToggleButton("1");
 	private ToggleButton imgLegs = new ToggleButton("1");
-	
-	private HBox headButtons = new HBox();
-	private HBox bodyButtons = new HBox();
-	private HBox legsButtons = new HBox();
-	private HBox colorPlusPlayer = new HBox();
-	
-	private VBox characterDisplay = new VBox();
-	private VBox playerNumberVBox = new VBox();
-	private VBox pickersPlusDone = new VBox();
 	
 	private ColorPicker colorPicker = new ColorPicker();
 	
@@ -99,6 +92,7 @@ public class App{
 	private GameController gameController;
 	
 	public App(Stage stage) throws FileNotFoundException {
+
 		
 		this.primaryStage = stage;
 		initMainMenu();
@@ -303,6 +297,18 @@ public class App{
 		ImageLib lib = new ImageLib();
 		myCharGenController.addPlayers();
 		
+		Button applyColor = new Button("Apply Color");
+		
+		HBox colorPlusPlayer = new HBox();
+		HBox characterDisplay = new HBox();
+		VBox playerNumberVBox = new VBox();
+		VBox pickersPlusDone = new VBox();
+		
+		VBox characterImages = new VBox();
+		VBox leftArrows = new VBox();
+		VBox rightArrows = new VBox();
+		VBox colorPickers = new VBox();
+		
 		ImageView head1IV = new ImageView(lib.head1);
 		ImageView head2IV = new ImageView(lib.head2);
 		ImageView body1IV = new ImageView(lib.body1);
@@ -324,28 +330,25 @@ public class App{
 		legs2IV.setId("2");
 		legs1IV.setDisable(true);
 		legs2IV.setDisable(true);
-		/*
-		 * imgHead.setPrefWidth(60); imgBody.setPrefWidth(60); imgLegs.setPrefWidth(60);
-		 */
-		
+
 		headImages.getChildren().addAll(head1IV, head2IV);
 		bodyImages.getChildren().addAll(body1IV, body2IV);
 		legsImages.getChildren().addAll(legs1IV, legs2IV);
 		
-		//TODO transform characterDisplay de VBox de HBoxes à HBox de VBoxes
-		headButtons.getChildren().addAll(leftArrowHead, headImages, rightArrowHead);
-		bodyButtons.getChildren().addAll(leftArrowBody, bodyImages, rightArrowBody);
-		legsButtons.getChildren().addAll(leftArrowLegs, legsImages, rightArrowLegs);
-		characterDisplay.getChildren().addAll(headButtons, bodyButtons, legsButtons);
+		colorPickers.getChildren().addAll(colorPicker, applyColor);
+		characterImages.getChildren().addAll(imgHead, imgBody, imgLegs);
+		leftArrows.getChildren().addAll(leftArrowHead, leftArrowBody, leftArrowLegs);
+		rightArrows.getChildren().addAll(rightArrowHead, rightArrowBody, rightArrowLegs);
+		characterDisplay.getChildren().addAll(leftArrows, characterImages, rightArrows);
 		playerNumberVBox.getChildren().addAll(playerNumber, playerNumberL);
-		colorPlusPlayer.getChildren().addAll(colorPicker, playerNumberVBox);
+		colorPlusPlayer.getChildren().addAll(colorPickers, playerNumberVBox);
 		pickersPlusDone.getChildren().addAll(colorPlusPlayer, doneButton);
 		charGenRoot.getChildren().addAll(characterDisplay, pickersPlusDone);
 		
 		charGenScene = new Scene(charGenRoot);
 		
 		for(Node node : headImages.getChildren()) {
-			if(node.getId()==Integer.toString(myCharGenController.myModel.players.get(myCharGenController.myModel.currentPlayer).getCurrentHead())) {
+			if(node.getId()==Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead())) {
 				node.setDisable(false);
 			}else {
 				node.setDisable(true);
@@ -353,7 +356,7 @@ public class App{
 		}
 		
 		for(Node node : bodyImages.getChildren()) {
-			if(node.getId()==Integer.toString(myCharGenController.myModel.players.get(myCharGenController.myModel.currentPlayer).getCurrentBody())) {
+			if(node.getId()==Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentBody())) {
 				node.setDisable(false);
 			}else {
 				node.setDisable(true);
@@ -361,12 +364,44 @@ public class App{
 		}
 		
 		for(Node node : headImages.getChildren()) {
-			if(node.getId()==Integer.toString(myCharGenController.myModel.players.get(myCharGenController.myModel.currentPlayer).getCurrentHead())) {
+			if(node.getId()==Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentLegs())) {
 				node.setDisable(false);
 			}else {
 				node.setDisable(true);
 			}
 		}
+		
+		
+		applyColor.setOnMouseClicked(e->{
+			if(playerNumber.getText().equals("1")) { 
+				  myCharGenController.setCurrentColor(myCharGenController.getPlayers().get(0), colorPicker.getValue());
+				  System.out.println(myCharGenController.getPlayers().get(0).getCurrentColor());
+				  for(Node node : characterImages.getChildren()) {
+				  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(0).getCurrentColor().getRed()*255
+						  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getGreen()*255
+						  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getBlue()*255
+						  +");"
+						  );
+				  }
+				  
+			}else if(playerNumber.getText().equals("2")) {
+				  myCharGenController.setCurrentColor(myCharGenController.getPlayers().get(1), colorPicker.getValue());
+				  System.out.println(myCharGenController.getPlayers().get(1).getCurrentColor());
+				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(1).getCurrentColor().getRed()*255
+						  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getGreen()*255
+						  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getBlue()*255
+						  +");"
+						  );
+			  }else if(playerNumber.getText().equals("3")) {
+				  myCharGenController.setCurrentColor(myCharGenController.getPlayers().get(2), colorPicker.getValue());
+				  System.out.println(myCharGenController.getPlayers().get(2).getCurrentColor());
+				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(2).getCurrentColor().getRed()*255
+						  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getGreen()*255
+						  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getBlue()*255
+						  +");"
+						  );
+			  }
+		});
 		
 		
 		doneButton.setOnMouseClicked(e->{
@@ -379,98 +414,118 @@ public class App{
 		playerNumber.setOnMouseClicked(e->{
 			  if(playerNumber.getText().equals("1")) { 
 				  playerNumber.setText("2");
-				  imgHead.setText(Integer.toString(myCharGenController.myModel.players.get(1).getCurrentHead()));
-				  imgBody.setText(Integer.toString(myCharGenController.myModel.players.get(1).getCurrentBody()));
-				  imgLegs.setText(Integer.toString(myCharGenController.myModel.players.get(1).getCurrentLegs()));
+				  colorPicker.setValue(myCharGenController.getPlayers().get(1).getCurrentColor());
+				  if(myCharGenController.getPlayers().get(1).getCurrentColor() != null) {
+				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(1).getCurrentColor().getRed()*255
+						  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getGreen()*255
+						  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getBlue()*255
+						  +");"
+						  );
+				  }
+				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead()));
+				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentBody()));
+				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentLegs()));
 			  }else if(playerNumber.getText().equals("2")) {
 				  playerNumber.setText("3");
-				  imgHead.setText(Integer.toString(myCharGenController.myModel.players.get(2).getCurrentHead())); 
-				  imgBody.setText(Integer.toString(myCharGenController.myModel.players.get(2).getCurrentBody()));
-				  imgLegs.setText(Integer.toString(myCharGenController.myModel.players.get(2).getCurrentLegs()));
+				  colorPicker.setValue(myCharGenController.getPlayers().get(2).getCurrentColor());
+				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(2).getCurrentColor().getRed()*255
+						  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getGreen()*255
+						  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getBlue()*255
+						  +");"
+						  );
+				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentHead())); 
+				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentBody()));
+				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentLegs()));
 			  }else if(playerNumber.getText().equals("3")) {
 				  playerNumber.setText("1");
-				  imgHead.setText(Integer.toString(myCharGenController.myModel.players.get(0).getCurrentHead()));
-				  imgBody.setText(Integer.toString(myCharGenController.myModel.players.get(0).getCurrentBody()));
-				  imgLegs.setText(Integer.toString(myCharGenController.myModel.players.get(0).getCurrentLegs()));
+				  colorPicker.setValue(myCharGenController.getPlayers().get(0).getCurrentColor());
+				  imgHead.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(0).getCurrentColor().getRed()*255
+						  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getGreen()*255
+						  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getBlue()*255
+						  +");"
+						  );
+				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentHead()));
+				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentBody()));
+				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentLegs()));
 			  }
 		});
 		
 		rightArrowHead.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) {
-				myCharGenController.UpHeadNumber(myCharGenController.myModel.players.get(0));
-				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.myModel.players.get(0))));
+				myCharGenController.UpHeadNumber(myCharGenController.getPlayers().get(0));
+				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(0))));
 			}else if(playerNumber.getText().equals("2")) {
-				myCharGenController.UpHeadNumber(myCharGenController.myModel.players.get(1));
-				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.myModel.players.get(1))));
+				myCharGenController.UpHeadNumber(myCharGenController.getPlayers().get(1));
+				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(1))));
 			}else if(playerNumber.getText().equals("3")) {
-				myCharGenController.UpHeadNumber(myCharGenController.myModel.players.get(2));
-				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.myModel.players.get(2))));
+				myCharGenController.UpHeadNumber(myCharGenController.getPlayers().get(2));
+				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(2))));
 			}
 		});
 		
 		leftArrowHead.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) {
-				myCharGenController.DownHeadNumber(myCharGenController.myModel.players.get(0));
-				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.myModel.players.get(0))));
+				myCharGenController.DownHeadNumber(myCharGenController.getPlayers().get(0));
+				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(0))));
 			}else if(playerNumber.getText().equals("2")) {
-				myCharGenController.DownHeadNumber(myCharGenController.myModel.players.get(1));
-				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.myModel.players.get(1))));
+				myCharGenController.DownHeadNumber(myCharGenController.getPlayers().get(1));
+				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(1))));
 			}else if(playerNumber.getText().equals("3")) {
-				myCharGenController.DownHeadNumber(myCharGenController.myModel.players.get(2));
-				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.myModel.players.get(2))));
+				myCharGenController.DownHeadNumber(myCharGenController.getPlayers().get(2));
+				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(2))));
 			}
 		});
 		
 		
 		rightArrowBody.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) {
-				myCharGenController.UpBodyNumber(myCharGenController.myModel.players.get(0));
-				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.myModel.players.get(0))));
+				myCharGenController.UpBodyNumber(myCharGenController.getPlayers().get(0));
+				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(0))));
 			}else if(playerNumber.getText().equals("2")) {
-				myCharGenController.UpBodyNumber(myCharGenController.myModel.players.get(1));
-				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.myModel.players.get(1))));
+				myCharGenController.UpBodyNumber(myCharGenController.getPlayers().get(1));
+				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(1))));
 			}else if(playerNumber.getText().equals("3")) {
-				myCharGenController.UpBodyNumber(myCharGenController.myModel.players.get(2));
-				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.myModel.players.get(2))));
+				myCharGenController.UpBodyNumber(myCharGenController.getPlayers().get(2));
+				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(2))));
 			}
 		});
 		
 		leftArrowBody.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) {
-				myCharGenController.DownBodyNumber(myCharGenController.myModel.players.get(0));
-				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.myModel.players.get(0))));
+				myCharGenController.DownBodyNumber(myCharGenController.getPlayers().get(0));
+				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(0))));
 			}else if(playerNumber.getText().equals("2")) {
-				myCharGenController.DownBodyNumber(myCharGenController.myModel.players.get(1));
-				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.myModel.players.get(1))));
+				myCharGenController.DownBodyNumber(myCharGenController.getPlayers().get(1));
+				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(1))));
 			}else if(playerNumber.getText().equals("3")) {
-				myCharGenController.DownBodyNumber(myCharGenController.myModel.players.get(2));
-				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.myModel.players.get(2))));
+				myCharGenController.DownBodyNumber(myCharGenController.getPlayers().get(2));
+				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(2))));
 			}
 		});
 		
 		rightArrowLegs.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) {
-				myCharGenController.UpLegsNumber(myCharGenController.myModel.players.get(0));
-				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.myModel.players.get(0))));
+				myCharGenController.UpLegsNumber(myCharGenController.getPlayers().get(0));
+				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(0))));
 			}else if(playerNumber.getText().equals("2")) {
-				myCharGenController.UpLegsNumber(myCharGenController.myModel.players.get(1));
-				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.myModel.players.get(1))));
+				myCharGenController.UpLegsNumber(myCharGenController.getPlayers().get(1));
+				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(1))));
 			}else if(playerNumber.getText().equals("3")) {
-				myCharGenController.UpLegsNumber(myCharGenController.myModel.players.get(2));
-				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.myModel.players.get(2))));
+				myCharGenController.UpLegsNumber(myCharGenController.getPlayers().get(2));
+				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(2))));
 			}
 		});
 		
 		leftArrowLegs.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) {
-				myCharGenController.DownLegsNumber(myCharGenController.myModel.players.get(0));
-				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.myModel.players.get(0))));
+				myCharGenController.DownLegsNumber(myCharGenController.getPlayers().get(0));
+				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(0))));
 			}else if(playerNumber.getText().equals("2")) {
-				myCharGenController.DownLegsNumber(myCharGenController.myModel.players.get(1));
-				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.myModel.players.get(1))));
+				myCharGenController.DownLegsNumber(myCharGenController.getPlayers().get(1));
+				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(1))));
 			}else if(playerNumber.getText().equals("3")) {
-				myCharGenController.DownLegsNumber(myCharGenController.myModel.players.get(2));
-				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.myModel.players.get(2))));
+				myCharGenController.DownLegsNumber(myCharGenController.getPlayers().get(2));
+				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(2))));
 			}
 		});
 	}

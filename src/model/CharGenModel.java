@@ -2,6 +2,8 @@ package model;
 
 import java.util.ArrayList;
 
+import javafx.scene.paint.Color;
+
 public class CharGenModel {
 	
 	public final int nbPlayers = 3;
@@ -92,6 +94,18 @@ public class CharGenModel {
 		setCurrentLegs(pg.currentLegs, pg);
 	}
 	
+	public Color getCurrentColor(PlayerGraphics pg) {
+		return pg.currentColor;
+	}
 	
-
+	public void setCurrentColor(PlayerGraphics pg, Color newColor) {
+		pg.currentColor = newColor;
+	}
+	
+	public ArrayList<PlayerGraphics> getPlayers(){
+		return this.players;
+	}
+	
+	
+	
 }
