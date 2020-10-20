@@ -9,9 +9,10 @@ public class TrapButton extends Button{
 	private int y;
 	private GameController controller;
 	
-	public TrapButton(int x, int y, GameController controller) {
+	public TrapButton(int x, int y, GameController gameController) {
 		super();
-		
+		this.controller = gameController;
+		this.setPrefSize(30, 30);
 		if(controller.getTrapTile(x, y))
 			this.setStyle("-fx-opacity: 0");
 		else
@@ -21,6 +22,9 @@ public class TrapButton extends Button{
 			if(!controller.getTrapTile(x, y))
 				this.setStyle("-fx-background-color: Green; -fx-border-color: Black");
 			controller.setTrapTile(x, y, true);
+			
+			if(controller.isTrapShapeClear())
+				controller.closeTrapWindow();
 		});
 	}
 	

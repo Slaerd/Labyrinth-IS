@@ -166,6 +166,16 @@ public class GameController implements Controller{
 		
 	}
 
+	public boolean isTrapShapeClear() {
+		// TODO Auto-generated method stub
+		return model.isTrapShapeClear();
+	}
+
+	public void closeTrapWindow() {
+		model.closeTrapWindow();
+		
+	}
+
 	/*public void rotate(int x, int y) {
 		model.rotateLeft(x, y);
 	}*/

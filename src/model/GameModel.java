@@ -46,6 +46,7 @@ public class GameModel {
 	//////////////
 	
 	private ArrayList<ArrayList<Boolean>> trap;
+	private Stage trapStage;
 	
 	public GameModel(String labyName) {
 		laby = Laby.getLaby(Laby.SQUARE);
@@ -437,10 +438,13 @@ public class GameModel {
 	}
 	
 	public void triggerTrap(int x, int y, GameController controller) {
-		Stage trapStage = new Stage();
+		trapStage = new Stage();
 		trapStage.setOnCloseRequest(e->{
 			e.consume();
 		});
+		
+
+		trapStage.setAlwaysOnTop(true);
 		
 		trap = Laby.getTrap();
 		VBox root = new VBox();
@@ -470,13 +474,26 @@ public class GameModel {
                 new KeyFrame(Duration.seconds(timerStart+1),
                 new KeyValue(seconds, 0)));
         timeline.playFromStart();
-        
+		
         root.getChildren().addAll(warning,trapShape,timerLabel);
         root.setAlignment(Pos.CENTER);
         trapStage.setScene(new Scene(root,App.WINDOWX/2,App.WINDOWY/2));
+
 		trapStage.show();
+		
 		laby.get(x).get(y).removeSpecial();
 	}
+	
+	public boolean isTrapShapeClear() {
+		for(ArrayList<Boolean> column : trap) {
+			for(Boolean trapTile : column) {
+				if(!trapTile)
+					return false;
+			}
+		}
+		return true;
+	}
+	
 	public void notifyListeners() {
 		for(Listener listener : listenerList)
 			listener.update();
@@ -494,5 +511,9 @@ public class GameModel {
 	public boolean isTrapped(int x, int y) {
 		// TODO Auto-generated method stub
 		return laby.get(x).get(y).getSpecial() == Tile.TRAP;
+	}
+
+	public void closeTrapWindow() {
+		trapStage.close();
 	}
 }
