@@ -51,7 +51,7 @@ public class GameModel {
 	
 	private ArrayList<ArrayList<Boolean>> trap = new ArrayList<ArrayList<Boolean>>(); //trap shape to draw
 	private Stage trapStage; //Trap QTE window
-	private Timeline timeline;
+	private Timeline timeline = new Timeline();
 	
 	/**
 	 * Creates the gameModel with the inputted laby
@@ -534,7 +534,7 @@ public class GameModel {
 		
 		trapStage.setAlwaysOnTop(true);		//prevents unfocusing by clicking under
 		
-		trap = Laby.getTrap(rand.nextInt());
+		trap = Laby.getTrap(rand.nextInt(3));
 		VBox root = new VBox();				
 		Label trapWarning = new Label("Draw the shape to escape the trap !");
 		trapWarning.setStyle("-fx-font-size: 30");
