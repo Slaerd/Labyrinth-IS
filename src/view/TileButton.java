@@ -241,6 +241,7 @@ public class TileButton extends ListenerButton{
 		if(controller.getPlayerInTile(x, y) != Player.NOPLAYER) {
 			if(controller.getActionsLeft(x,y) == 0)
 				this.setTextFill(Color.RED);
+			//System.out.println("set player " + controller.getPlayerInTile(x, y) + "at " + x + " " + y);
 			this.setText(Integer.toString(controller.getPlayerInTile(x, y))); 
 		}else {
 			this.setText("");
@@ -258,7 +259,6 @@ public class TileButton extends ListenerButton{
 		
 		if(controller.isTrapped(x,y) && controller.getPlayerInTile(x, y) != Player.NOPLAYER) {
 			controller.triggerTrap(x,y);
-			System.out.println("aled");
 		}
 		
 		this.setDisable(controller.isTrapActive());

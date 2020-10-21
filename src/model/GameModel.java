@@ -64,6 +64,9 @@ public class GameModel {
 		listenerList = new ArrayList<Listener>();
 		templatePlayers(4);
 		
+		for(Player p : playerList) {
+			System.out.println("Target for " + p.getName() + " :" + p.target);
+		}
 		generateAccessibles(playerList.get(turnPlayer));
 	}
 	
@@ -188,6 +191,7 @@ public class GameModel {
 		if(!p.isTrapped())
 			p.regainActions();
 		p.setTrapped(false);
+		
 		turnPlayer = (turnPlayer + 1) % playerList.size();
 		if(playerList.get(turnPlayer).getActions() > 0)
 			generateAccessibles(playerList.get(turnPlayer));
@@ -205,24 +209,22 @@ public class GameModel {
 	}
 	
 	public void kill() {
-		Player killer = playerList.get(turnPlayer);		
-		Player dead = playerList.get(killer.target);
+		Player killer = playerList.get(turnPlayer);
 
+		Player dead = playerList.get(killer.target);
+		dead.setNumber(killer.target);
+		System.out.println("killer : " + killer.getNumber());
+		System.out.println("killer target : " + killer.target);
+		System.out.println("dead number: " + dead.getNumber());
 		
 		dead.spendLife();
 
 		
 		if(dead.getLives() > 0) {
-			laby.get(killer.x).get(killer.y).removePlayer();
-			laby.get(dead.x).get(dead.y).removePlayer();
-			
-			dead.moveTo(dead.xSpawn, dead.ySpawn);
-			killer.moveTo(killer.xSpawn, killer.ySpawn);
-			
-			laby.get(dead.xSpawn).get(dead.ySpawn).putPlayer(killer.target);
-			laby.get(killer.xSpawn).get(killer.ySpawn).putPlayer(turnPlayer);
-			
-			nextTurn();
+				respawn(killer);
+				respawn(dead);
+				
+				nextTurn();
 		}else {
 			gameState = true;
 		}
@@ -230,6 +232,18 @@ public class GameModel {
 		notifyListeners();
 	}
 	
+	private void respawn(Player p) {
+		 	int spawnInvader = laby.get(p.xSpawn).get(p.ySpawn).getPlayerNumber();
+			laby.get(p.x).get(p.y).removePlayer();
+			
+			if(spawnInvader != Player.NOPLAYER)
+				respawn(playerList.get(spawnInvader));
+			
+			System.out.println("player respawned : " + p.getNumber());
+			p.moveTo(p.xSpawn, p.ySpawn);
+			laby.get(p.xSpawn).get(p.ySpawn).putPlayer(p.getNumber());
+		
+	}
 	///////////////////////////////////
 	//// WALL MANIPULATION METHODS ////
 	///////////////////////////////////

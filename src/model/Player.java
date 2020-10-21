@@ -2,7 +2,7 @@ package model;
 
 public class Player {
 	public static final int MOVEMENT = 2;
-	public static final int ACTION = 2;
+	public static final int ACTION = 3;
 	public static final int NOPLAYER = -1;
 	
 	private String name;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Laby {
 	//public static final int SIZE = 10;
-	public static final int WALLOBJECTMAXSIZE = 5;
+	public static final int WALLOBJECTMAXSIZE = 6;
 	public static final String SQUARE = "square";
 	public static final String RECTANGLE = "rectangle";
 	public static final String CROSS = "cross";
@@ -18,8 +18,8 @@ public class Laby {
 												{0,2,2,0,2,2,0,2,2,0},
 												{0,2,2,0,2,2,0,2,2,0},
 												{0,0,0,0,0,0,0,0,0,0},
-												{0,2,2,0,2,2,0,2,2,0},
-												{0,2,2,0,2,2,0,2,2,0},
+												{2,2,2,0,2,2,0,2,2,2},
+												{2,2,2,0,2,2,0,2,2,2},
 												{0,0,0,0,0,0,0,0,0,0},
 												{0,2,2,0,2,2,0,2,2,0},
 												{0,2,2,0,2,2,0,2,2,0},
