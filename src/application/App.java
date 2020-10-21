@@ -258,10 +258,9 @@ public class App{
 			public void update() {
 				if(gameController.getActionsLeft() == 0)
 					this.setStyle("-fx-background-color: #9CFF31; -fx-border-color: Black");
-				else
+				else {
 					this.setStyle("");	
 				}
-					this.setStyle("");
 				
 				this.setDisable(gameController.isTrapActive());
 			}
@@ -304,10 +303,6 @@ public class App{
 		//root.setAlignment(Pos.CENTER);
 		gameScene = new Scene(root, 1280,720);
 		gameController.notifyListeners();
-	}
-	 
-	public void initTrapStage() {
-
 	}
 	
 	public void initCharGen() throws FileNotFoundException {
@@ -374,7 +369,6 @@ public class App{
 		legs2IV.setFitWidth(100);
 		
 		//setting the default color on the character images
-		System.out.println(beginningCharacterColor);
 		imgHead.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 		imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 		imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
@@ -396,12 +390,10 @@ public class App{
 		charGenRoot.getChildren().addAll(characterDisplay, pickersPlusDone);
 		
 		charGenScene = new Scene(charGenRoot);
-		System.out.println("cyu"+myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead());
 		
 		applyColor.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) { 
 				  myCharGenController.setCurrentColor(myCharGenController.getPlayers().get(0), colorPicker.getValue());
-				  System.out.println(myCharGenController.getPlayers().get(0).getCurrentColor());
 				  for(Node node : characterImages.getChildren()) {
 				  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(0).getCurrentColor().getRed()*255
 						  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getGreen()*255
@@ -412,7 +404,6 @@ public class App{
 				  
 			}else if(playerNumber.getText().equals("2")) {
 				  myCharGenController.setCurrentColor(myCharGenController.getPlayers().get(1), colorPicker.getValue());
-				  System.out.println(myCharGenController.getPlayers().get(1).getCurrentColor());
 				  for(Node node : characterImages.getChildren()) {
 					  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(1).getCurrentColor().getRed()*255
 							  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getGreen()*255
