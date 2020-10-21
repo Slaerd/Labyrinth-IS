@@ -267,6 +267,7 @@ public class App{
 		backButton.setOnMouseClicked(e->{
 			if(e.getButton().equals(MouseButton.PRIMARY))
 				primaryStage.setScene(mainMenuScene);
+				primaryStage.centerOnScreen();
 		});
 		
 		int[] size = gameController.getLabSize();
@@ -380,32 +381,6 @@ public class App{
 		
 		charGenScene = new Scene(charGenRoot);
 		System.out.println("cyu"+myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead());
-		
-		for(Node node : headImages.getChildren()) {
-			System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead())));
-			if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead()))) {
-				node.setOpacity(0);
-			}else {
-				node.setOpacity(1);
-			}
-		}
-		
-		for(Node node : bodyImages.getChildren()) {
-			if(node.getId()==Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentBody())) {
-				node.setOpacity(1);
-			}else {
-				node.setOpacity(0);
-			}
-		}
-		
-		for(Node node : headImages.getChildren()) {
-			if(node.getId()==Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentLegs())) {
-				node.setOpacity(1);
-			}else {
-				node.setOpacity(0);
-			}
-		}
-		
 		
 		applyColor.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) { 
