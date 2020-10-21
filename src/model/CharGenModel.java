@@ -6,10 +6,10 @@ import javafx.scene.paint.Color;
 
 public class CharGenModel {
 	
-	public final int nbPlayers = 3;
-	public final int nbHeads = 5;
-	public final int nbBodies = 5;
-	public final int nbLegs = 5;
+	public final int nbPlayers = 4;
+	public final int nbHeads = 2;
+	public final int nbBodies = 2;
+	public final int nbLegs = 2;
 
 	
 	public int currentPlayer;
@@ -44,20 +44,22 @@ public class CharGenModel {
 	}
 	
 	public void newHeadRightArrow(PlayerGraphics pg) {
-		pg.currentHead = (getCurrentHead(pg) + 1)%nbHeads;
-		setCurrentHead(pg.currentHead, pg);
+		if(this.players.get(this.getCurrentPlayer()).getCurrentHead()==1) {
+			this.players.get(this.getCurrentPlayer()).setCurrentHead(2);
+		}else {
+			this.players.get(this.getCurrentPlayer()).setCurrentHead(1);
+		}
+		
 	}
 	
 	public void newHeadLeftArrow(PlayerGraphics pg) {
-		if(pg.getCurrentHead()==0) {
-			setCurrentHead(0, pg);
+		if(this.players.get(this.getCurrentPlayer()).getCurrentHead()==1) {
+			this.players.get(this.getCurrentPlayer()).setCurrentHead(2);
 		}else {
-		pg.currentHead = Math.abs((getCurrentHead(pg) - 1)%nbHeads);
-		setCurrentHead(pg.getCurrentHead(), pg);
+			this.players.get(this.getCurrentPlayer()).setCurrentHead(1);
 		}
 	}
 	
-	//same for body
 	public int getCurrentBody(PlayerGraphics pg) {
 		return pg.currentBody;
 	}
@@ -67,15 +69,21 @@ public class CharGenModel {
 	}
 	
 	public void newBodyRightArrow(PlayerGraphics pg) {
-		pg.currentBody = Math.abs((getCurrentBody(pg) + 1)%nbBodies);
-		setCurrentBody(pg.currentBody, pg);
+		if(this.players.get(this.getCurrentPlayer()).getCurrentBody()==1) {
+			this.players.get(this.getCurrentPlayer()).setCurrentBody(2);
+		}else {
+			this.players.get(this.getCurrentPlayer()).setCurrentBody(1);
+		}
 	}
 	
 	public void newBodyLeftArrow(PlayerGraphics pg) {
-		pg.currentBody = Math.abs((getCurrentBody(pg) - 1)%nbBodies);
-		setCurrentBody(pg.currentBody, pg);
+		if(this.players.get(this.getCurrentPlayer()).getCurrentBody()==1) {
+			this.players.get(this.getCurrentPlayer()).setCurrentBody(2);
+		}else {
+			this.players.get(this.getCurrentPlayer()).setCurrentBody(1);
+		}
 	}
-	//same for legs
+
 	public int getCurrentLegs(PlayerGraphics pg) {
 		return pg.currentLegs;
 	}
@@ -85,8 +93,11 @@ public class CharGenModel {
 	}
 	
 	public void newLegsRightArrow(PlayerGraphics pg) {
-		pg.currentLegs = (getCurrentLegs(pg) + 1)%nbLegs;
-		setCurrentLegs(pg.currentLegs, pg);
+		if(this.players.get(this.getCurrentPlayer()).getCurrentLegs()==1) {
+			this.players.get(this.getCurrentPlayer()).setCurrentLegs(2);
+		}else {
+			this.players.get(this.getCurrentPlayer()).setCurrentLegs(1);
+		}
 	}
 	
 	public void newLegsLeftArrow(PlayerGraphics pg) {

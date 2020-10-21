@@ -301,22 +301,26 @@ public class App{
 		
 		HBox colorPlusPlayer = new HBox();
 		HBox characterDisplay = new HBox();
+		
 		VBox playerNumberVBox = new VBox();
 		VBox pickersPlusDone = new VBox();
-		
 		VBox characterImages = new VBox();
 		VBox leftArrows = new VBox();
 		VBox rightArrows = new VBox();
 		VBox colorPickers = new VBox();
 		
-		
 		StackPane character = new StackPane();
 		
 		Pane paneOverImages = new Pane(); 
 		
-		paneOverImages.setStyle("-fx-backgrond-color : #42e5eb");
-		paneOverImages.setOpacity(1);
-		characterDisplay.setOpacity(0.1);
+		paneOverImages.setOpacity(0.5);
+		
+		rightArrowHead.setPrefHeight(100);
+		leftArrowHead.setPrefHeight(100);
+		rightArrowBody.setPrefHeight(100);
+		leftArrowBody.setPrefHeight(100);
+		rightArrowLegs.setPrefHeight(100);
+		leftArrowLegs.setPrefHeight(100);
 		
 		ImageView head1IV = new ImageView(lib.head1);
 		ImageView head2IV = new ImageView(lib.head2);
@@ -366,37 +370,39 @@ public class App{
 		characterImages.getChildren().addAll(headImages,bodyImages,legsImages);
 		leftArrows.getChildren().addAll(leftArrowHead, leftArrowBody, leftArrowLegs);
 		rightArrows.getChildren().addAll(rightArrowHead, rightArrowBody, rightArrowLegs);
-		characterDisplay.getChildren().addAll(leftArrows, characterImages, rightArrows);
+		characterDisplay.getChildren().addAll(leftArrows, character, rightArrows);
 		playerNumberVBox.getChildren().addAll(playerNumber, playerNumberL);
 		colorPlusPlayer.getChildren().addAll(colorPickers, playerNumberVBox);
 		pickersPlusDone.getChildren().addAll(colorPlusPlayer, doneButton);
 		//character.getChildren().addAll( characterDisplay, paneOverImages);
-		character.getChildren().addAll( paneOverImages, characterDisplay);
-		charGenRoot.getChildren().addAll(character, pickersPlusDone);
+		character.getChildren().addAll(characterImages,paneOverImages);
+		charGenRoot.getChildren().addAll(characterDisplay, pickersPlusDone);
 		
 		charGenScene = new Scene(charGenRoot);
+		System.out.println("cyu"+myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead());
 		
 		for(Node node : headImages.getChildren()) {
-			if(node.getId()==Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead())) {
-				node.setDisable(false);
+			System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead())));
+			if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead()))) {
+				node.setOpacity(0);
 			}else {
-				node.setDisable(true);
+				node.setOpacity(1);
 			}
 		}
 		
 		for(Node node : bodyImages.getChildren()) {
 			if(node.getId()==Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentBody())) {
-				node.setDisable(false);
+				node.setOpacity(1);
 			}else {
-				node.setDisable(true);
+				node.setOpacity(0);
 			}
 		}
 		
 		for(Node node : headImages.getChildren()) {
 			if(node.getId()==Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentLegs())) {
-				node.setDisable(false);
+				node.setOpacity(1);
 			}else {
-				node.setDisable(true);
+				node.setOpacity(0);
 			}
 		}
 		
@@ -433,6 +439,18 @@ public class App{
 							  +");"
 							  );
 					  }
+			  }else if(playerNumber.getText().equals("4")) {
+				  myCharGenController.setCurrentColor(myCharGenController.getPlayers().get(3), colorPicker.getValue());
+				  System.out.println(myCharGenController.getPlayers().get(3).getCurrentColor());
+				  for(Node node : characterImages.getChildren()) {
+					  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(3).getCurrentColor().getRed()*255
+							  +","+myCharGenController.getPlayers().get(3).getCurrentColor().getGreen()*255
+							  +","+myCharGenController.getPlayers().get(3).getCurrentColor().getBlue()*255
+							  +");"
+							  );
+				  }
+				  System.out.println(myCharGenController.getPlayers().get(3).getCurrentColor());
+				  System.out.println(myCharGenController.getPlayers().get(0).getCurrentColor());
 			  }
 		});
 		
@@ -453,7 +471,7 @@ public class App{
 					  imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 					  imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 				  }else {
-					  for(Node node : characterImages.getChildren()) {
+					  for(Node node : character.getChildren()) {
 						  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(1).getCurrentColor().getRed()*255
 								  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getGreen()*255
 								  +","+myCharGenController.getPlayers().get(1).getCurrentColor().getBlue()*255
@@ -464,6 +482,30 @@ public class App{
 				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead()));
 				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentBody()));
 				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentLegs()));
+				  for(Node node : headImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : bodyImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentBody())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentBody()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : legsImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentLegs())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentLegs()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
 			  }else if(playerNumber.getText().equals("2")) {
 				  playerNumber.setText("3");
 				  colorPicker.setValue(myCharGenController.getPlayers().get(2).getCurrentColor());
@@ -472,7 +514,7 @@ public class App{
 					  imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 					  imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 				  }else {
-					  for(Node node : characterImages.getChildren()) {
+					  for(Node node : character.getChildren()) {
 						  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(2).getCurrentColor().getRed()*255
 								  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getGreen()*255
 								  +","+myCharGenController.getPlayers().get(2).getCurrentColor().getBlue()*255
@@ -483,15 +525,90 @@ public class App{
 				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentHead())); 
 				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentBody()));
 				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentLegs()));
+				  for(Node node : headImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentHead())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentHead()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : bodyImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentBody())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentBody()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : legsImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentLegs())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(2).getCurrentLegs()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
 			  }else if(playerNumber.getText().equals("3")) {
-				  playerNumber.setText("1");
-				  colorPicker.setValue(myCharGenController.getPlayers().get(0).getCurrentColor());
-				  if(myCharGenController.getPlayers().get(2).getCurrentColor() == null) {
+				  playerNumber.setText("4");
+				  colorPicker.setValue(myCharGenController.getPlayers().get(3).getCurrentColor());
+				  if(myCharGenController.getPlayers().get(3).getCurrentColor() == null) {
 					  imgHead.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 					  imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 					  imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
 				  }else {
-					  for(Node node : characterImages.getChildren()) {
+					  for(Node node : character.getChildren()) {
+						  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(3).getCurrentColor().getRed()*255
+								  +","+myCharGenController.getPlayers().get(3).getCurrentColor().getGreen()*255
+								  +","+myCharGenController.getPlayers().get(3).getCurrentColor().getBlue()*255
+								  +");"
+								  );
+					  }
+				  }
+				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentHead()));
+				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentBody()));
+				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentLegs()));
+				  for(Node node : headImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentHead())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentHead()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : headImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : bodyImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentBody())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentBody()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : legsImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentLegs())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(3).getCurrentLegs()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+			  }else if(playerNumber.getText().equals("4")) {
+				  playerNumber.setText("1");
+				  colorPicker.setValue(myCharGenController.getPlayers().get(0).getCurrentColor());
+				  if(myCharGenController.getPlayers().get(0).getCurrentColor() == null) {
+					  imgHead.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+					  imgBody.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+					  imgLegs.setStyle("-fx-background-color:" + RGBOfBeginningCharacterColor);
+				  }else {
+					  for(Node node : character.getChildren()) {
 						  node.setStyle("-fx-background-color: rgb(" + myCharGenController.getPlayers().get(0).getCurrentColor().getRed()*255
 								  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getGreen()*255
 								  +","+myCharGenController.getPlayers().get(0).getCurrentColor().getBlue()*255
@@ -499,22 +616,66 @@ public class App{
 								  );
 					  }
 				  }
-				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentHead()));
+				  imgHead.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentHead())); 
 				  imgBody.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentBody()));
 				  imgLegs.setText(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentLegs()));
+				  for(Node node : headImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentHead())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentHead()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : headImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(1).getCurrentHead()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : bodyImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentBody())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentBody()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
+				  for(Node node : legsImages.getChildren()) {
+						System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentLegs())));
+						if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(0).getCurrentLegs()))) {
+							node.setOpacity(1);
+						}else {
+							node.setOpacity(0);
+						}
+					}
 			  }
 		});
+		
 		
 		rightArrowHead.setOnMouseClicked(e->{
 			if(playerNumber.getText().equals("1")) {
 				myCharGenController.UpHeadNumber(myCharGenController.getPlayers().get(0));
 				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(0))));
+				System.out.println(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead());
 			}else if(playerNumber.getText().equals("2")) {
 				myCharGenController.UpHeadNumber(myCharGenController.getPlayers().get(1));
 				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(1))));
 			}else if(playerNumber.getText().equals("3")) {
 				myCharGenController.UpHeadNumber(myCharGenController.getPlayers().get(2));
 				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(2))));
+			}else if(playerNumber.getText().equals("4")) {
+				myCharGenController.UpHeadNumber(myCharGenController.getPlayers().get(3));
+				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(3))));
+			}
+			for(Node node : headImages.getChildren()) {
+				if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead()))) {
+					node.setOpacity(1);
+				}else {
+					node.setOpacity(0);
+				}
 			}
 		});
 		
@@ -528,6 +689,17 @@ public class App{
 			}else if(playerNumber.getText().equals("3")) {
 				myCharGenController.DownHeadNumber(myCharGenController.getPlayers().get(2));
 				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(2))));
+			}else if(playerNumber.getText().equals("4")) {
+				myCharGenController.DownHeadNumber(myCharGenController.getPlayers().get(3));
+				imgHead.setText(Integer.toString(myCharGenController.getCurrentHead(myCharGenController.getPlayers().get(3))));
+			}
+			for(Node node : headImages.getChildren()) {
+				System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead())));
+				if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentHead()))) {
+					node.setOpacity(1);
+				}else {
+					node.setOpacity(0);
+				}
 			}
 		});
 		
@@ -542,7 +714,19 @@ public class App{
 			}else if(playerNumber.getText().equals("3")) {
 				myCharGenController.UpBodyNumber(myCharGenController.getPlayers().get(2));
 				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(2))));
+			}else if(playerNumber.getText().equals("4")) {
+				myCharGenController.UpBodyNumber(myCharGenController.getPlayers().get(3));
+				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(3))));
 			}
+			for(Node node : bodyImages.getChildren()) {
+				System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentBody())));
+				if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentBody()))) {
+					node.setOpacity(1);
+				}else {
+					node.setOpacity(0);
+				}
+			}
+			
 		});
 		
 		leftArrowBody.setOnMouseClicked(e->{
@@ -555,7 +739,19 @@ public class App{
 			}else if(playerNumber.getText().equals("3")) {
 				myCharGenController.DownBodyNumber(myCharGenController.getPlayers().get(2));
 				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(2))));
+			}else if(playerNumber.getText().equals("4")) {
+				myCharGenController.DownBodyNumber(myCharGenController.getPlayers().get(3));
+				imgBody.setText(Integer.toString(myCharGenController.getCurrentBody(myCharGenController.getPlayers().get(3))));
 			}
+			for(Node node : bodyImages.getChildren()) {
+				System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentBody())));
+				if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentBody()))) {
+					node.setOpacity(1);
+				}else {
+					node.setOpacity(0);
+				}
+			}
+			
 		});
 		
 		rightArrowLegs.setOnMouseClicked(e->{
@@ -568,6 +764,17 @@ public class App{
 			}else if(playerNumber.getText().equals("3")) {
 				myCharGenController.UpLegsNumber(myCharGenController.getPlayers().get(2));
 				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(2))));
+			}else if(playerNumber.getText().equals("4")) {
+				myCharGenController.UpLegsNumber(myCharGenController.getPlayers().get(3));
+				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(3))));
+			}
+			for(Node node : legsImages.getChildren()) {
+				System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentLegs())));
+				if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentLegs()))) {
+					node.setOpacity(1);
+				}else {
+					node.setOpacity(0);
+				}
 			}
 		});
 		
@@ -581,6 +788,17 @@ public class App{
 			}else if(playerNumber.getText().equals("3")) {
 				myCharGenController.DownLegsNumber(myCharGenController.getPlayers().get(2));
 				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(2))));
+			}else if(playerNumber.getText().equals("4")) {
+				myCharGenController.DownLegsNumber(myCharGenController.getPlayers().get(3));
+				imgLegs.setText(Integer.toString(myCharGenController.getCurrentLegs(myCharGenController.getPlayers().get(3))));
+			}
+			for(Node node : legsImages.getChildren()) {
+				System.out.println(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentLegs())));
+				if(node.getId().equals(Integer.toString(myCharGenController.getPlayers().get(myCharGenController.getCurrentPlayer()).getCurrentLegs()))) {
+					node.setOpacity(1);
+				}else {
+					node.setOpacity(0);
+				}
 			}
 		});
 	}

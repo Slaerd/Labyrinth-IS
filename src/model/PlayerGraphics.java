@@ -20,8 +20,20 @@ public class PlayerGraphics {
 		this.currentLegs = 1;
 	}
 	
+	public void setCurrentHead(int newHead) {
+		this.currentHead = newHead;
+	}
+	
 	public int getPlayerNumber() {
 		return this.playerNumber;
+	}
+	
+	public void setCurrentBody(int newBody) {
+		this.currentBody = newBody;
+	}
+	
+	public void setCurrentLegs(int newLegs) {
+		this.currentLegs = newLegs;
 	}
 	
 	public int getCurrentHead() {
