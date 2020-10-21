@@ -52,16 +52,6 @@ public class TileButton extends ListenerButton{
 			}
 		});
 		
-		/*this.setOnKeyPressed(e->{
-			if(e.getCode().equals(KeyCode.F)) {
-				if(controller.isHovered(x, y)) {
-					controller.rotate(x,y);
-					System.out.println("sus");
-				}
-				e.consume();
-			}	
-		});*/
-		
 		initDragNDrop();
 	}
 	
@@ -117,7 +107,6 @@ public class TileButton extends ListenerButton{
 		this.setOnMousePressed(e->{
 		});
 	}	
-	
 	private void setWallStyle() {
 		
 		this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
@@ -140,7 +129,6 @@ public class TileButton extends ListenerButton{
 		});
 		
 		this.setOnMouseReleased(e->{
-			//this.setStyle("-fx-background-color: #3f3f3f; -fx-border-color: Black");
 			this.setCursor(Cursor.DEFAULT);
 		});
 		
@@ -170,9 +158,6 @@ public class TileButton extends ListenerButton{
 		/// GRABBING ///
 		////////////////
 		
-		this.setOnRotate(e->{
-			System.out.println("this workming ?");
-		});
 		this.setOnDragDetected(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
             	if(controller.getTileType(x, y) == Tile.WALL && controller.getActionsLeft() > 0) {
@@ -180,7 +165,7 @@ public class TileButton extends ListenerButton{
 	                Dragboard db = TileButton.this.startDragAndDrop(TransferMode.ANY);
 	                
 	                ClipboardContent content = new ClipboardContent();
-	                content.putString(Integer.toString(x) + "," + Integer.toString(y));
+	                content.putString(Integer.toString(x) + "," + Integer.toString(y)); //Transfers the original position the the dropped tile
 	                
 	                db.setContent(content);
             	}
@@ -189,7 +174,6 @@ public class TileButton extends ListenerButton{
 		
 		this.setOnDragDone(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-            	//System.out.println("bruh");
                 if (!controller.isDropSuccess()) {
                 	controller.restoreWall();
                 }else {
@@ -207,8 +191,8 @@ public class TileButton extends ListenerButton{
 				if (event.getDragboard().hasString()) {
                 	Dragboard db = event.getDragboard();
                 	String wallObjectOrigin = (String) db.getContent(DataFormat.PLAIN_TEXT);
-                    if(controller.setWallObjectShadow(x,y,wallObjectOrigin))
-                    	event.acceptTransferModes(TransferMode.MOVE);
+                    if(controller.drawWallObjectShadow(x,y,wallObjectOrigin)) 	//Draw the shadow of the wall, and if the object can be dropped
+                    	event.acceptTransferModes(TransferMode.MOVE);			//allow the motion
             	}
             }
         });
@@ -216,14 +200,14 @@ public class TileButton extends ListenerButton{
         this.setOnDragExited(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
             	if (event.getDragboard().hasString()) {
-            		controller.unshadow();
+            		controller.unshadow();					//delete current shadows when exiting a tile
             	}
             }
         });
         
         this.setOnDragDropped(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-            		controller.shadowToWall();
+            		controller.shadowToWall();				//"drops" the wall on the shadow
             }
         });
 
@@ -241,7 +225,6 @@ public class TileButton extends ListenerButton{
 		if(controller.getPlayerInTile(x, y) != Player.NOPLAYER) {
 			if(controller.getActionsLeft(x,y) == 0)
 				this.setTextFill(Color.RED);
-			//System.out.println("set player " + controller.getPlayerInTile(x, y) + "at " + x + " " + y);
 			this.setText(Integer.toString(controller.getPlayerInTile(x, y))); 
 		}else {
 			this.setText("");
@@ -265,8 +248,6 @@ public class TileButton extends ListenerButton{
 
 		if(controller.isGameDone())
 			this.setDisable(true);
-		
-		//this.setText(Integer.toString(x) + " " + Integer.toString(y));
 		
 	}
 }

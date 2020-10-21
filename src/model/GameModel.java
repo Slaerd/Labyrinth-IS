@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import application.App;
 import controller.GameController;
@@ -22,13 +23,15 @@ import javafx.util.Duration;
 import view.TrapButton;
 
 public class GameModel {
+	private Random rand = new Random();
 	private ArrayList<Player> playerList;
 	private ArrayList<ArrayList<Tile>> laby;
 	private ArrayList<Tile> accessible;
 	private int turnPlayer = 0;
+	
 	private ArrayList<Listener> listenerList;
 	
-	private boolean gameState = false;
+	private boolean gameState = false; //ongoing for false, done for true
 	
 	private final int sizeX;
 	private final int sizeY;
@@ -40,16 +43,19 @@ public class GameModel {
 	private ArrayList<ArrayList<Tile>> wallObjectList;
 	private ArrayList<Tile> wallVisited;
 	
-	private ArrayList<Tile> wallObjectBuffer;
+	private ArrayList<Tile> wallObjectBuffer; //Contains the wallObjects in an ongoing drag and drop motion
 	
 	//////////////
 	//// TRAP ////
 	//////////////
 	
-	private ArrayList<ArrayList<Boolean>> trap = new ArrayList<ArrayList<Boolean>>();
-	private Stage trapStage;
-	private Timeline timeline;
+	private ArrayList<ArrayList<Boolean>> trap = new ArrayList<ArrayList<Boolean>>(); //trap shape to draw
+	private Stage trapStage; //Trap QTE window
 	
+	/**
+	 * Creates the gameModel with the inputted laby
+	 * @param labyName
+	 */
 	public GameModel(String labyName) {
 		laby = Laby.getLaby(labyName);
 		sizeX = laby.size();
@@ -74,16 +80,18 @@ public class GameModel {
 		int[] size = {sizeX,sizeY};
 		return size;
 	}
-	private void printTile(Tile tile) {
-		System.out.print("(" + tile.x + ", " + tile.y + ")");
-	}
 	
+	/**
+	 * Creates basic players, their targets are the next player in the list
+	 * @param n number of players
+	 */
 	private void templatePlayers(int n) {
 		int playerNumber = 0;
 		for(int i = 0; i < sizeX; i++) {
 			for(int j = 0; j < sizeY; j++) {
 				if(laby.get(i).get(j).getType() == Tile.SPAWN) {
 					playerList.add(new Player("Player" + Integer.toString(playerNumber), i, j, playerNumber, (playerNumber + 1) % n));
+					//						  Playeri									(i,j)	number		 target
 					laby.get(i).get(j).putPlayer(playerNumber);
 					playerNumber++;
 				}
@@ -91,6 +99,11 @@ public class GameModel {
 		}
 	};
 	
+	/**
+	 * Moves a player to Tile x y if he can move and it's clear
+	 * @param x
+	 * @param y
+	 */
 	public void movePlayer(int x, int y) {
 		Player currentPlayer = playerList.get(turnPlayer);
 		
@@ -109,18 +122,10 @@ public class GameModel {
 		notifyListeners();
 	}
 	
-	public void movedWall() {
-		Player currentPlayer = playerList.get(turnPlayer);
-		
-		currentPlayer.spendAction();
-		if(currentPlayer.getActions() > 0)
-			generateAccessibles(currentPlayer);
-		else
-			accessible = new ArrayList<Tile>();
-		
-		notifyListeners();
-	}
-	
+	/**
+	 * Creates the accessible tiles for movement for the player p
+	 * @param p
+	 */
 	private void generateAccessibles(Player p) {
 		accessible = new ArrayList<Tile>();
 		for(int x = 0; x < sizeX; x++) {
@@ -131,17 +136,21 @@ public class GameModel {
 		}
 	}
 	
+	/**
+	 * Gives the accessible tiles for the turnPlayer
+	 * @return
+	 */
 	public ArrayList<Tile> getAccessible(){
 		return accessible;
 	}
+	
 	/**
-	 * 
+	 * Checks if player p can move to fX fY from its current position
 	 * @param p
 	 * @param fX
 	 * @param fY
 	 * @return
 	 */
-	
 	private boolean isLegalMove(Player p, int fX, int fY) {
 		
 		int distance = Math.abs(fX - p.x) + Math.abs(fY - p.y);
@@ -168,57 +177,108 @@ public class GameModel {
 	public int getTurnPlayer() {
 		return turnPlayer;
 	}
-
-	public void addListener(Listener listener) {
-		listenerList.add(listener);
-		
-	}
 	
-	public void removeListener(Listener listener) {
-		listenerList.remove(listener);
+	public Player getPlayer(int i) {
+		return playerList.get(i);
+	}
+
+	public String getTurnPlayerName() {
+		return playerList.get(turnPlayer).getName();
 	}
 	
 	public int getPlayerInTile(int x, int y) {
 		return laby.get(x).get(y).getPlayerNumber();
 	}
-
+	
+	/**
+	 * Check if a tile x y is accessible to the turnPlayer
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public boolean isAccessible(int x, int y) {
 		return accessible.contains(laby.get(x).get(y));
 	}
 	
+	/**
+	 * Goes to the next player
+	 */
 	public void nextTurn() {
 		Player p = playerList.get(turnPlayer);
-		if(!p.isTrapped())
-			p.regainActions();
+		if(!p.isTrapped())		//if a player failed a trap this turn
+			p.regainActions();	//don't restore his actions
 		p.setTrapped(false);
 		
-		turnPlayer = (turnPlayer + 1) % playerList.size();
+		turnPlayer = (turnPlayer + 1) % playerList.size(); //next player becomes turnplayer
 		if(playerList.get(turnPlayer).getActions() > 0)
-			generateAccessibles(playerList.get(turnPlayer));
+			generateAccessibles(playerList.get(turnPlayer));	//generate his possible moves
 		else
 			accessible = new ArrayList<Tile>();
+		
 		notifyListeners();
 	}
 	
+	/**
+	 * gets actions left for the turnPlayer
+	 * @return
+	 */
 	public int getActionsLeft() {
 		return playerList.get(turnPlayer).getActions();
 	}
-
+	
+	
+	public int getActionsLeft(int x, int y) {
+		return playerList.get(laby.get(x).get(y).getPlayerNumber()).getActions();
+	}
+	
+	/**
+	 * gets the tile x y's type
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public int getTileType(int x, int y) {
 		return laby.get(x).get(y).getType();
 	}
 	
+	public boolean isGameDone() {
+		return gameState;
+	}
+	
+	/**
+	 * checks if the turnPlayer is near its target
+	 * @return
+	 */
+	public boolean isTargetNear() {
+		Player p = playerList.get(turnPlayer);
+		if(p.x + 1 < sizeX) {
+			if(laby.get(p.x + 1).get(p.y).getPlayerNumber() == p.target)
+				return true;
+		}
+		if(p.y + 1 < sizeY) {
+			if(laby.get(p.x).get(p.y + 1).getPlayerNumber() == p.target)
+				return true;
+		}
+		if(p.x - 1 >= 0) {
+			if(laby.get(p.x - 1).get(p.y).getPlayerNumber() == p.target)
+				return true;
+		}	
+		if(p.y - 1 >= 0) {
+			if(laby.get(p.x).get(p.y - 1).getPlayerNumber() == p.target)
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * the turnPlayer kills his nearby target
+	 */
 	public void kill() {
 		Player killer = playerList.get(turnPlayer);
 
 		Player dead = playerList.get(killer.target);
 		dead.setNumber(killer.target);
-		System.out.println("killer : " + killer.getNumber());
-		System.out.println("killer target : " + killer.target);
-		System.out.println("dead number: " + dead.getNumber());
-		
 		dead.spendLife();
-
 		
 		if(dead.getLives() > 0) {
 				respawn(killer);
@@ -232,6 +292,11 @@ public class GameModel {
 		notifyListeners();
 	}
 	
+	/**
+	 * Puts players back to their spawn after a kill
+	 * if the spawn is occupied by a player, he respawns as well
+	 * @param p
+	 */
 	private void respawn(Player p) {
 		 	int spawnInvader = laby.get(p.xSpawn).get(p.ySpawn).getPlayerNumber();
 			laby.get(p.x).get(p.y).removePlayer();
@@ -239,17 +304,18 @@ public class GameModel {
 			if(spawnInvader != Player.NOPLAYER)
 				respawn(playerList.get(spawnInvader));
 			
-			System.out.println("player respawned : " + p.getNumber());
 			p.moveTo(p.xSpawn, p.ySpawn);
 			laby.get(p.xSpawn).get(p.ySpawn).putPlayer(p.getNumber());
 		
 	}
+	
 	///////////////////////////////////
 	//// WALL MANIPULATION METHODS ////
 	///////////////////////////////////
 	
 	/**
-	 * Generates ArrayList of tiles of adjacent walls, useful for the drag n drop
+	 * generates the list of wallObjects
+	 * <br> see generateWallObject
 	 */
 	private void generateWallObjectList() {
 		ArrayList<Tile> wallObjectBuffer;
@@ -264,16 +330,24 @@ public class GameModel {
 		}
 	}
 	
+	/**
+	 * generates wallObjects at the tile x y if any
+	 * <br> WallObjects are adjacent wall tiles, essentially tetris pieces
+	 * <br> used for the drag and drop motion
+	 * @param i
+	 * @param j
+	 * @param buffer will store the wallObject generated
+	 */
 	private void generateWallObject(int i, int j, ArrayList<Tile> buffer) {
 		Tile currentTile = laby.get(i).get(j);
-		if( !wallVisited.contains(currentTile) 
-			&& currentTile.getType() == Tile.WALL 
-			&& buffer.size() != Laby.WALLOBJECTMAXSIZE) {
+		if( !wallVisited.contains(currentTile) 				//if the tile wasn't already visited
+			&& currentTile.getType() == Tile.WALL 			//and it's a wall
+			&& buffer.size() != Laby.WALLOBJECTMAXSIZE) {	//and the wallObject isn't too big
 			
-				buffer.add(currentTile);
-				wallVisited.add(currentTile);
+				buffer.add(currentTile);					//add it to the wall object
+				wallVisited.add(currentTile);				//add to visited tiles
 				
-				if(i + 1 < sizeX) {
+				if(i + 1 < sizeX) {							//Then check adjacent tiles
 					generateWallObject(i + 1, j, buffer);
 				}
 				if(j + 1 < sizeY) {
@@ -288,6 +362,11 @@ public class GameModel {
 		}
 	}
 	
+	/**
+	 * notifies wallObject at tile x y it's being hovered on
+	 * @param x
+	 * @param y
+	 */
 	public void hoverWallObject(int x, int y) {
 		for(ArrayList<Tile> wallObject : wallObjectList) {
 			if(wallObject.contains(laby.get(x).get(y))) {
@@ -298,15 +377,16 @@ public class GameModel {
 		}
 		notifyListeners();
 	}
+	
 	/**
-	 * Sets shadow of the wallObject for the drag and drop motion
+	 * Sets shadows of the wallObject for the drag and drop motion
 	 * <br> nX and nY are the current destination for the wallObject
 	 * @param nX 
 	 * @param nY
 	 * @param wallObjectOrigin position of the wallObject before the dnd motion
 	 * @return if the drop was valid
 	 */
-	public boolean setWallObjectShadow(int nX, int nY, String wallObjectOrigin) {
+	public boolean drawWallObjectShadow(int nX, int nY, String wallObjectOrigin) {
 		String[] coordinates = wallObjectOrigin.split(",");
 		boolean isDroppable = true;
 		int oX = Integer.parseInt(coordinates[0]);
@@ -332,32 +412,6 @@ public class GameModel {
 		return isDroppable;
 	}
 	
-	/*public void rotateLeft(int x, int y) {
-		ArrayList<Tile> myWallObject = new ArrayList<Tile>();
-		for(ArrayList<Tile> wallObject : wallObjectList) {
-			if(wallObject.contains(laby.get(x).get(y))) {
-				myWallObject = wallObject;
-				break;
-			}
-		}
-		
-		int height = 0;
-		
-		for(Tile a : myWallObject){
-			for(Tile b : myWallObject){
-				height = Math.max( Math.abs(a.y - b.y), height );
-			}
-		}
-		
-		for(int i = 0; i < myWallObject.size(); i++){
-			Tile tile = myWallObject.get(i);
-			tile.setType(Tile.FLOOR);
-			laby.get(height - tile.y - 1).get(tile.x).setType(Tile.WALL);
-		}
-		
-		notifyListeners();
-	}*/
-	
 	public boolean isHovered(int x, int y) {
 		return laby.get(x).get(y).isHovered();
 	}
@@ -365,6 +419,9 @@ public class GameModel {
 		return laby.get(x).get(y).isShadowed();
 	}
 	
+	/**
+	 * undoes the hovering for all tiles
+	 */
 	public void unhover() {
 		for(ArrayList<Tile> line : laby) {
 			for(Tile tile : line)
@@ -372,6 +429,10 @@ public class GameModel {
 		}
 		notifyListeners();
 	}
+	
+	/**
+	 * undoes the shadowing for all tiles
+	 */
 	public void unshadow() {
 		for(ArrayList<Tile> line : laby) {
 			for(Tile tile : line)
@@ -380,6 +441,11 @@ public class GameModel {
 		notifyListeners();
 	}
 
+	/**
+	 * removes a wallObject at the tile x y from the labyrinth and the wallObject list
+	 * @param x
+	 * @param y
+	 */
 	public void removeWallObject(int x, int y) {
 		
 		for(int i = 0; i < wallObjectList.size(); i++){
@@ -397,6 +463,10 @@ public class GameModel {
 		notifyListeners();
 	}
 	
+	/**
+	 * Transforms the wall shadow into an actual wall
+	 * <br> then add it to the wallObjectList
+	 */
 	public void shadowToWall() {
 		ArrayList<Tile> newWallObject = new ArrayList<Tile>();
 		for(ArrayList<Tile> line : laby) {
@@ -408,12 +478,30 @@ public class GameModel {
 			}
 		}
 		
-		if(!wallObjectBuffer.containsAll(newWallObject)) {
-			wallObjectList.add(newWallObject);
+		if(!wallObjectBuffer.containsAll(newWallObject)) { //if the wall was not redropped to its original place
+			wallObjectList.add(newWallObject);				//we add it
 			wallObjectBuffer = new ArrayList<Tile>();
 		}
 	}
-
+	
+	/**
+	 * function called to consume an action as you moved a wall
+	 */
+	public void movedWall() {
+		Player currentPlayer = playerList.get(turnPlayer);
+		
+		currentPlayer.spendAction();
+		if(currentPlayer.getActions() > 0)
+			generateAccessibles(currentPlayer);
+		else
+			accessible = new ArrayList<Tile>();
+		
+		notifyListeners();
+	}
+	
+	/**
+	 * places back the picked up wall if the drag n drop gesture was a failure
+	 */
 	public void restoreWall() {
 		for(Tile tile : wallObjectBuffer)
 			laby.get(tile.x).get(tile.y).setType(Tile.WALL);
@@ -421,58 +509,32 @@ public class GameModel {
 		wallObjectList.add(wallObjectBuffer);
 		notifyListeners();
 	}
-
+	
 	public boolean isDropSuccess() {
-		return wallObjectBuffer.size() == 0;
-	}
-
-	public Player getPlayer(int i) {
-		return playerList.get(i);
-	}
-
-	public String getTurnPlayerName() {
-		return playerList.get(turnPlayer).getName();
+		return wallObjectBuffer.size() == 0; //If the buffer is empty, it means our drop was a success
 	}
 	
-	public boolean isGameDone() {
-		return gameState;
-	}
-
-	public boolean isTargetNear() {
-		Player p = playerList.get(turnPlayer);
-		if(p.x + 1 < sizeX) {
-			if(laby.get(p.x + 1).get(p.y).getPlayerNumber() == p.target)
-				return true;
-		}
-		if(p.y + 1 < sizeY) {
-			if(laby.get(p.x).get(p.y + 1).getPlayerNumber() == p.target)
-				return true;
-		}
-		if(p.x - 1 >= 0) {
-			if(laby.get(p.x - 1).get(p.y).getPlayerNumber() == p.target)
-				return true;
-		}	
-		if(p.y - 1 >= 0) {
-			if(laby.get(p.x).get(p.y - 1).getPlayerNumber() == p.target)
-				return true;
-		}
-		return false;
-	}
+	//////////////
+	//// TRAP ////
+	//////////////
 	
+	/**
+	 * Initializes the trap subwindow
+	 * @param x
+	 * @param y
+	 * @param controller
+	 */
 	public void triggerTrap(int x, int y, GameController controller) {
 		trapStage = new Stage();
-		trapStage.initStyle(StageStyle.UNDECORATED);
+		trapStage.initStyle(StageStyle.UNDECORATED);	//hides the stage outline
 		trapStage.setOnCloseRequest(e->{
-			e.consume();
+			e.consume();					//prevent closing
 		});
 		
-		trapStage.setOnHiding(e->{
-			e.consume();
-		});
-		trapStage.setAlwaysOnTop(true);
+		trapStage.setAlwaysOnTop(true);		//prevents unfocusing by clicking under
 		
-		trap = Laby.getTrap();
-		VBox root = new VBox();
+		trap = Laby.getTrap(rand.nextInt(3));
+		VBox root = new VBox();				
 		Label trapWarning = new Label("Draw the shape to escape the trap !");
 		trapWarning.setStyle("-fx-font-size: 30");
 		GridPane trapGrid = new GridPane();
@@ -486,20 +548,20 @@ public class GameModel {
 		
 		Label timerLabel = new Label();
 		int timerStart = 5;
-		IntegerProperty seconds = new SimpleIntegerProperty(timerStart);
+		IntegerProperty seconds = new SimpleIntegerProperty(timerStart); //the label counts from 5 to 0
 
 		
         timerLabel.textProperty().bind(seconds.asString());
 
         seconds.set(timerStart);
-        timeline = new Timeline();
+        Timeline timeline = new Timeline();
         timeline.getKeyFrames().add(
                 new KeyFrame(Duration.seconds(timerStart+1),
                 new KeyValue(seconds, 0)));
         timeline.playFromStart();
         timeline.setOnFinished(e->{
-			playerList.get(turnPlayer).setTrapped(true);
-        	trapStage.close();
+			playerList.get(turnPlayer).setTrapped(true);	//When you hit 0, punish the current player
+        	trapStage.close();								//close the window
         	trap = new ArrayList<ArrayList<Boolean>>();
         	notifyListeners();
         });
@@ -514,11 +576,15 @@ public class GameModel {
 
 		trapStage.show();
 		
-		laby.get(x).get(y).removeSpecial();
+		laby.get(x).get(y).removeSpecial();	//clear the trap
 		
 		notifyListeners();
 	}
 	
+	/**
+	 * checks if the trap shape was cleared by a player
+	 * @return
+	 */
 	public boolean isTrapShapeClear() {
 		for(ArrayList<Boolean> column : trap) {
 			for(Boolean trapTile : column) {
@@ -528,38 +594,66 @@ public class GameModel {
 		}
 		return true;
 	}
+
+	/**
+	 * checks if a tile of the trap shape was hovered on
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean getTrapTile(int x, int y) {
+		return trap.get(x).get(y);
+	}
+	
+	/**
+	 * do or undo a hover on a tile of the trap shape
+	 * @param x
+	 * @param y
+	 * @param b
+	 */
+	public void setTrapTile(int x, int y, boolean b) {
+		trap.get(x).set(y,b);
+	}
+	
+	/**
+	 * check if a tile x y is trapped
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isTrapped(int x, int y) {
+		return laby.get(x).get(y).getSpecial() == Tile.TRAP;
+	}
+	
+	/**
+	 * function to call when the trap is cleared
+	 */
+	public void successTrap() {
+		trapStage.close();
+		trap = new ArrayList<ArrayList<Boolean>>();
+		notifyListeners();
+	}
+	
+	/**
+	 * checks if the trap window is still here
+	 * @return
+	 */
+	public boolean isTrapActive() {
+		return trap.size() != 0; //if the trap shape is empty, it's not
+	}
 	
 	public void notifyListeners() {
 		for(Listener listener : listenerList)
 			listener.update();
 	}
-
-	public boolean getTrapTile(int x, int y) {
-		// TODO Auto-generated method stub
-		return trap.get(x).get(y);
+	
+	public void addListener(Listener listener) {
+		listenerList.add(listener);
+		
+	}
+	
+	public void removeListener(Listener listener) {
+		listenerList.remove(listener);
 	}
 
-	public void setTrapTile(int x, int y, boolean b) {
-		trap.get(x).set(y,b);
-	}
-
-	public boolean isTrapped(int x, int y) {
-		return laby.get(x).get(y).getSpecial() == Tile.TRAP;
-	}
-
-	public void successTrap() {
-		timeline.stop();
-		trapStage.close();
-		trap = new ArrayList<ArrayList<Boolean>>();
-		notifyListeners();
-	}
-
-	public boolean isTrapActive() {
-		return trap.size() != 0;
-	}
-
-	public int getActionsLeft(int x, int y) {
-		// TODO Auto-generated method stub
-		return playerList.get(laby.get(x).get(y).getPlayerNumber()).getActions();
-	}
 }

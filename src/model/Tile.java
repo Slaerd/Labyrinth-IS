@@ -12,7 +12,7 @@ public class Tile {
 	
 	private int playerNumber = -1;
 	private int tileType;
-	private int specialEvent = 0;
+	private int specialEvent = 0; //contains either traps or bonuses (bonus not implemented)
 	private boolean shadowMode = false; //Tracks if a drag and drop motion is happening
 	private boolean hoverMode = false;
 	

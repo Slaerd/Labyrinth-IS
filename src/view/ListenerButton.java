@@ -4,6 +4,11 @@ import controller.Controller;
 import event.Listener;
 import javafx.scene.control.Button;
 
+/**
+ * 
+ * @author Kevin Ratovo
+ * abstract class for lone buttons that don't deserve their own class
+ */
 public abstract class ListenerButton extends Button implements Listener {
 	
 	protected Controller controller;

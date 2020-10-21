@@ -7,11 +7,11 @@ public class Player {
 	
 	private String name;
 	private int number;
-	protected final int xSpawn;
+	protected final int xSpawn; //spawn position
 	protected final int ySpawn;
 	protected int x;
 	protected int y;
-	protected final int target;
+	protected final int target; //player to kill
 	private int lives = 2;
 	private int action = ACTION;
 	private int bonusAction = 0;
@@ -84,12 +84,10 @@ public class Player {
 	}
 
 	public boolean isTrapped() {
-		// TODO Auto-generated method stub
 		return trapped ;
 	}
 
 	public void setTrapped(boolean b) {
-		// TODO Auto-generated method stub
 		trapped = b;
 	}
 
